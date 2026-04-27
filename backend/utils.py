@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from openai import OpenAI
@@ -122,6 +122,45 @@ def generate_twin_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
         "graph_evidence": graph_result,
         "graph_payload": graph_as_payload(graph),
     }
+
+
+def generate_followup_reply(mode: str, patient: Dict[str, Any], user_question: str, twin: Optional[Dict[str, Any]] = None) -> str:
+    """
+    mode: "general" or "specialist"
+    Returns a single assistant message continuing the consultation.
+    """
+    patient_text = patient_to_text(patient)
+    if mode == "specialist":
+        twin_context = ""
+        if twin:
+            twin_context = (
+                "Specialist assessment:\n"
+                f"{twin.get('assessment', '')}\n\n"
+                "Immediate actions:\n"
+                + "\n".join([f"- {x}" for x in twin.get("immediate_actions", [])])
+                + "\n\nFollow-up plan:\n"
+                + "\n".join([f"- {x}" for x in twin.get("follow_up_plan", [])])
+            )
+        system = (
+            "You are Dr. Vimlesh Pandey's AI Specialist Twin. "
+            "Write in a calm, professional clinical tone. "
+            "Be patient-first, explain reasoning simply, and be precise. "
+            "Never claim certainty; include safety escalation advice when needed. "
+            "Do not mention GPT or OpenAI. "
+            "If a clinician is required, clearly say so."
+        )
+        user = f"{patient_text}\n\n{twin_context}\n\nPatient question:\n{user_question}"
+        return _safe_openai_chat(system, user)
+
+    system = (
+        "You are a general medical AI assistant for decision-support. "
+        "Write in a clear, friendly, non-alarming tone. "
+        "Explain step-by-step, but keep it practical. "
+        "Never mention GPT or OpenAI. "
+        "Always include: when to seek urgent care if symptoms suggest an emergency."
+    )
+    user = f"{patient_text}\n\nPatient question:\n{user_question}"
+    return _safe_openai_chat(system, user)
 
 
 def get_case_matches(patient: Dict[str, Any]) -> List[Dict[str, Any]]:

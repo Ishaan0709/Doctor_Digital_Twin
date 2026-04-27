@@ -33,15 +33,25 @@ with c2:
 
 c3, c4 = st.columns(2, gap="large")
 with c3:
-    st.markdown("<div class='diff-card'><h4 style='margin-top:0'>Suggested Next Steps</h4>", unsafe_allow_html=True)
-    for item in r.get("suggested_next_steps", []):
-        st.write(f"- {item}")
-    st.markdown("</div>", unsafe_allow_html=True)
+    steps = r.get("suggested_next_steps", [])
+    steps_html = "".join([f"<li>{item}</li>" for item in steps])
+    st.markdown(
+        "<div class='diff-card'>"
+        "<h4 style='margin-top:0'>Suggested Next Steps</h4>"
+        f"<ul style='margin:0.25rem 0 0 1.15rem'>{steps_html}</ul>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
 with c4:
-    st.markdown("<div class='diff-card'><h4 style='margin-top:0'>Risk Notes</h4>", unsafe_allow_html=True)
-    for item in r.get("risk_notes", []):
-        st.write(f"- {item}")
-    st.markdown("</div>", unsafe_allow_html=True)
+    notes = r.get("risk_notes", [])
+    notes_html = "".join([f"<li>{item}</li>" for item in notes])
+    st.markdown(
+        "<div class='diff-card'>"
+        "<h4 style='margin-top:0'>Risk Notes</h4>"
+        f"<ul style='margin:0.25rem 0 0 1.15rem'>{notes_html}</ul>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
 
 st.markdown(
     "<div class='glass-card'><strong>Next step:</strong> move to the specialist twin consultation, then open the difference dashboard.</div>",

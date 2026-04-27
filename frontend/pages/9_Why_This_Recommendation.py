@@ -43,7 +43,7 @@ st.metric(
 )
 
 c1, c2 = st.columns(2)
-if c1.button("Open Full Backend Story", type="primary"):
+if c1.button("Open Full Explainability Report", type="primary"):
     st.switch_page("pages/11_Backend_Story.py")
 if c2.button("Open Admin / Dataset"):
     st.switch_page("pages/10_Admin_Dataset.py")

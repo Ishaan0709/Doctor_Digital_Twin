@@ -63,3 +63,6 @@ with c5:
 
 if st.button("Start Analysis", type="primary"):
     st.switch_page("pages/1_Patient_Analysis.py")
+
+if st.button("Open Consultation Portal"):
+    st.switch_page("pages/0_Consultation_Portal.py")

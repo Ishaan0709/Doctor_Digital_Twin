@@ -53,13 +53,5 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.info("Twin consultation is more context-aware through patient-first reasoning, specialist historical evidence, and graph-based risk links.")
 
-g_depth = metrics.get("Generic Context Depth", 0)
-t_depth = round(sum(metrics.get(k, 0) for k in keys) / max(len(keys), 1))
-st.markdown(
-    f"<div class='glass-card'>Generic reasoning depth score: <span class='score-pill'>{g_depth}</span> "
-    f"&nbsp;&nbsp; Twin reasoning depth score: <span class='score-pill'>{t_depth}</span></div>",
-    unsafe_allow_html=True,
-)
-
 if st.button("Open Why This Recommendation", type="primary"):
     st.switch_page("pages/9_Why_This_Recommendation.py")
