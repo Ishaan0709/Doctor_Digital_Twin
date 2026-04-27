@@ -15,7 +15,7 @@ st.sidebar.title("CardioTwin AI")
 st.sidebar.caption("Elite Cardiology Reasoning Platform")
 st.sidebar.success("Use Streamlit page navigation in the sidebar to access all screens.")
 st.sidebar.markdown("### Quick Path")
-st.sidebar.write("1) Intake  ->  2) Generic  ->  3) Twin  ->  4) Evidence")
+st.sidebar.write("1) Intake  ->  2) Generic Baseline  ->  3) Vimlesh Twin  ->  4) GPT vs Twin Difference  ->  Evidence")
 st.sidebar.caption("Tip: start from Patient Analysis for best flow.")
 
 st.markdown("""
@@ -46,6 +46,20 @@ section_card(
     "Key features",
     "Patient intake, generic consultation, digital twin consultation, historical case intelligence, graph evidence reasoning, executive comparison, and recommendation traceability.",
 )
+
+c4, c5 = st.columns(2)
+with c4:
+    st.markdown(
+        "<div class='diff-card'><h4 style='margin-top:0'>Clinical Intelligence Layers</h4>"
+        "<ul><li>Patient-first reasoning</li><li>Historical case retrieval (RAG)</li><li>Graph-linked evidence (GraphRAG)</li></ul></div>",
+        unsafe_allow_html=True,
+    )
+with c5:
+    st.markdown(
+        "<div class='diff-card'><h4 style='margin-top:0'>Built for Clarity</h4>"
+        "<ul><li>Direct GPT vs Twin comparison</li><li>Confidence and similarity explanation tooltips</li><li>Backend story page with full traceability</li></ul></div>",
+        unsafe_allow_html=True,
+    )
 
 if st.button("Start Analysis", type="primary"):
     st.switch_page("pages/1_Patient_Analysis.py")

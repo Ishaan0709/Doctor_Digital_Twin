@@ -6,7 +6,7 @@ from frontend.ui import apply_theme, render_top_nav, section_card
 
 st.set_page_config(page_title="Graph Intelligence", layout="wide")
 apply_theme()
-render_top_nav("5 Graph")
+render_top_nav("6 Graph")
 st.title("Graph Intelligence")
 st.caption("NetworkX + Plotly risk relationship intelligence")
 section_card(
@@ -60,4 +60,4 @@ if payload.get("edges"):
         st.write(f"- {src} -> {tgt} ({edge.get('relation', 'linked_to')})")
 
 if st.button("Open Comparison Insights", type="primary"):
-    st.switch_page("pages/7_Comparison_Insights.py")
+    st.switch_page("pages/8_Comparison_Insights.py")

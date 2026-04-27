@@ -5,7 +5,7 @@ from frontend.ui import apply_theme, render_top_nav, section_card
 
 st.set_page_config(page_title="Comparison Insights", layout="wide")
 apply_theme()
-render_top_nav("6 Insights")
+render_top_nav("7 Insights")
 st.title("Comparison Insights")
 st.caption("Executive dashboard (no raw side-by-side transcript)")
 section_card(
@@ -22,8 +22,16 @@ if not generic or not twin:
 metrics = generate_comparison_metrics(generic, twin)
 keys = ["Personalization Score", "Use of Historical Evidence", "Risk Sensitivity", "Explainability", "Actionability", "Specialist Alignment"]
 cols = st.columns(6)
+metric_help = {
+    "Personalization Score": "Keyword heuristic score from twin text (patient/history/family/diabetes/LDL/BP).",
+    "Use of Historical Evidence": "Keyword heuristic score for case/pattern/outcome references in twin reasoning.",
+    "Risk Sensitivity": "Keyword heuristic score for warning/monitor/escalate style safety language.",
+    "Explainability": "Keyword heuristic score for causal language like because/based on/evidence.",
+    "Actionability": "Keyword heuristic score for concrete actions: tests, follow-up, adjust, refer.",
+    "Specialist Alignment": "Keyword heuristic score for preventive cardiology markers (ECG/Echo/lipid etc.).",
+}
 for i, k in enumerate(keys):
-    cols[i].metric(k, f"{metrics.get(k, 0)}")
+    cols[i].metric(k, f"{metrics.get(k, 0)}", help=metric_help.get(k, ""))
 
 scores = [metrics[k] for k in keys]
 fig = go.Figure(
@@ -45,5 +53,13 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.info("Twin consultation is more context-aware through patient-first reasoning, specialist historical evidence, and graph-based risk links.")
 
+g_depth = metrics.get("Generic Context Depth", 0)
+t_depth = round(sum(metrics.get(k, 0) for k in keys) / max(len(keys), 1))
+st.markdown(
+    f"<div class='glass-card'>Generic reasoning depth score: <span class='score-pill'>{g_depth}</span> "
+    f"&nbsp;&nbsp; Twin reasoning depth score: <span class='score-pill'>{t_depth}</span></div>",
+    unsafe_allow_html=True,
+)
+
 if st.button("Open Why This Recommendation", type="primary"):
-    st.switch_page("pages/8_Why_This_Recommendation.py")
+    st.switch_page("pages/9_Why_This_Recommendation.py")

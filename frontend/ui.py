@@ -49,6 +49,15 @@ div.stAlert, .stCodeBlock, .stDataFrame, .stTable {
     border-color: #3b82f6 !important;
     filter: brightness(1.06);
 }
+.stButton > button, button, [role="button"] {
+    cursor: pointer !important;
+}
+
+/* Reduce annoying text-selection/caret behavior on click targets */
+button, [role="button"], .nav-chip, .stMetric, summary {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
 
 /* Inputs and expanders */
 div[data-baseweb="input"] input,
@@ -72,6 +81,12 @@ details {
     border-radius: 18px;
     border: 1px solid rgba(226, 232, 240, 0.2);
     box-shadow: 0 18px 40px rgba(2, 6, 23, 0.45);
+}
+.hero h1 {
+    margin-bottom: 0.35rem;
+}
+.hero p {
+    margin-top: 0;
 }
 .card {
     background: #ffffff !important;
@@ -102,6 +117,26 @@ h1, h2, h3 {
 .muted {
     color: #b7c4db;
 }
+
+/* Highlighted difference cards and score chips */
+.diff-card {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.65) 100%);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    min-height: 180px;
+}
+.score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.2);
+    border: 1px solid rgba(96, 165, 250, 0.4);
+    color: #dbeafe;
+    font-weight: 600;
+}
 </style>
 """,
         unsafe_allow_html=True,
@@ -113,18 +148,20 @@ def render_top_nav(current_step: str) -> None:
         "1 Intake",
         "2 Generic",
         "3 Twin",
-        "4 Cases",
-        "5 Graph",
-        "6 Insights",
-        "7 Why",
-        "8 Admin",
+        "4 Difference",
+        "5 Cases",
+        "6 Graph",
+        "7 Insights",
+        "8 Why",
+        "9 Admin",
+        "10 Story",
     ]
     chips = []
     for step in steps:
         if step == current_step:
-            chips.append(f"<span style='padding:6px 10px;border-radius:999px;background:#1d4ed8;color:#f8fafc;font-weight:600'>{step}</span>")
+            chips.append(f"<span class='nav-chip' style='padding:6px 10px;border-radius:999px;background:#1d4ed8;color:#f8fafc;font-weight:600;cursor:default'>{step}</span>")
         else:
-            chips.append(f"<span style='padding:6px 10px;border-radius:999px;background:rgba(148,163,184,.22);color:#dbe7fb'>{step}</span>")
+            chips.append(f"<span class='nav-chip' style='padding:6px 10px;border-radius:999px;background:rgba(148,163,184,.22);color:#dbe7fb;cursor:default'>{step}</span>")
     st.markdown("<div style='display:flex;gap:.45rem;flex-wrap:wrap;margin:.2rem 0 1rem 0;'>" + "".join(chips) + "</div>", unsafe_allow_html=True)
 
 

@@ -1,7 +1,7 @@
 def rerank_cases(cases, patient_text: str):
     t = patient_text.lower()
 
-    def score(c):
+    def bonus_for_case(c):
         bonus = 0.0
         s = str(c.get("symptoms", "")).lower()
         d = str(c.get("diagnosis", "")).lower()
@@ -9,6 +9,16 @@ def rerank_cases(cases, patient_text: str):
             bonus += 0.08
         if "cad" in t and "cad" in d:
             bonus += 0.1
-        return float(c.get("match_score", 0.0)) + bonus
+        return bonus
 
-    return sorted(cases, key=score, reverse=True)
+    enriched = []
+    for c in cases:
+        base = float(c.get("match_score", 0.0))
+        bonus = bonus_for_case(c)
+        updated = dict(c)
+        updated["base_match_score"] = base
+        updated["rerank_bonus"] = round(bonus, 3)
+        updated["final_match_score"] = round(min(1.0, base + bonus), 3)
+        enriched.append(updated)
+
+    return sorted(enriched, key=lambda c: c["final_match_score"], reverse=True)

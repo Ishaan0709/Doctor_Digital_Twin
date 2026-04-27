@@ -13,6 +13,21 @@ from twin_engine.personalization import extract_uniqueness_flags
 from twin_engine.twin_prompt import build_twin_prompt
 
 
+def confidence_breakdown(retrieved_count: int, graph_link_count: int) -> Dict[str, Any]:
+    base = 0.60
+    retrieval_component = 0.07 * retrieved_count
+    graph_component = 0.03 * graph_link_count
+    raw = base + retrieval_component + graph_component
+    final = round(min(0.98, raw), 2)
+    return {
+        "base": round(base, 2),
+        "retrieval_component": round(retrieval_component, 2),
+        "graph_component": round(graph_component, 2),
+        "raw_score": round(raw, 2),
+        "final_score": final,
+    }
+
+
 def _load_prompt(name: str) -> str:
     return (PROMPTS_DIR / name).read_text(encoding="utf-8")
 
@@ -80,6 +95,7 @@ def generate_twin_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
     retrieved_text = "\n".join([f"Case {c.get('case_id')}: Dx {c.get('diagnosis')} | Decision {c.get('decision')} | Outcome {c.get('outcome')}" for c in retrieved])
     prompt = build_twin_prompt(patient_text, retrieved_text, "\n".join(graph_result["evidence_summary"]), "\n".join(uniqueness_flags))
     assessment = _safe_openai_chat(_load_prompt("doctor_twin.txt"), prompt)
+    confidence = confidence_breakdown(len(retrieved), len(graph_result["links"]))
 
     return {
         "assessment": assessment,
@@ -101,7 +117,8 @@ def generate_twin_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
             "Escalate earlier if rest pain, syncope, or worsening dyspnea appears.",
             "Reassess LDL/HbA1c trajectory and prevention targets in 6-12 weeks.",
         ],
-        "confidence_score": round(min(0.98, 0.6 + 0.07 * len(retrieved) + 0.03 * len(graph_result["links"])), 2),
+        "confidence_score": confidence["final_score"],
+        "confidence_breakdown": confidence,
         "graph_evidence": graph_result,
         "graph_payload": graph_as_payload(graph),
     }
