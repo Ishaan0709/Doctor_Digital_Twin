@@ -1,0 +1,12 @@
+streamlit
+fastapi
+uvicorn
+openai
+pandas
+numpy
+faiss-cpu
+networkx
+plotly
+python-dotenv
+scikit-learn
+pydantic

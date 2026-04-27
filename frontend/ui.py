@@ -1,0 +1,135 @@
+import streamlit as st
+
+
+def apply_theme() -> None:
+    st.markdown(
+        """
+<style>
+/* App background and global text */
+.stApp {
+    background: radial-gradient(1200px 600px at 15% 5%, #0f2747 0%, #071224 40%, #050b17 100%);
+    color: #e6edf7;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #121826 0%, #0f172a 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+section[data-testid="stSidebar"] * {
+    color: #d8e3f5 !important;
+}
+
+/* Metric cards */
+div[data-testid="metric-container"] {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 14px;
+    padding: 10px 12px;
+}
+div[data-testid="metric-container"] label,
+div[data-testid="metric-container"] div {
+    color: #e2e8f0 !important;
+}
+
+/* Data blocks and alerts */
+div.stAlert, .stCodeBlock, .stDataFrame, .stTable {
+    border-radius: 12px !important;
+}
+
+/* Buttons */
+.stButton > button {
+    border-radius: 10px !important;
+    border: 1px solid #2f5ea8 !important;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+    color: #f8fafc !important;
+    font-weight: 600 !important;
+}
+.stButton > button:hover {
+    border-color: #3b82f6 !important;
+    filter: brightness(1.06);
+}
+
+/* Inputs and expanders */
+div[data-baseweb="input"] input,
+div[data-baseweb="textarea"] textarea {
+    background: rgba(15, 23, 42, 0.5) !important;
+    color: #e2e8f0 !important;
+    border: 1px solid rgba(148, 163, 184, 0.35) !important;
+}
+details {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 12px;
+    padding: 0.2rem 0.4rem;
+}
+
+/* Custom cards from landing page */
+.hero {
+    background: linear-gradient(120deg, rgba(20, 42, 84, 0.95) 0%, rgba(41, 82, 152, 0.88) 100%);
+    color: #f8fbff;
+    padding: 2.2rem;
+    border-radius: 18px;
+    border: 1px solid rgba(226, 232, 240, 0.2);
+    box-shadow: 0 18px 40px rgba(2, 6, 23, 0.45);
+}
+.card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-radius: 14px;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.15);
+    margin-bottom: 0.9rem;
+}
+.card h3, .card p, .card li, .card span {
+    color: #0f172a !important;
+}
+
+/* Better spacing for titles */
+h1, h2, h3 {
+    letter-spacing: 0.2px;
+}
+
+.glass-card {
+    background: rgba(15, 23, 42, 0.58);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.9rem;
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.24);
+}
+.muted {
+    color: #b7c4db;
+}
+</style>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def render_top_nav(current_step: str) -> None:
+    steps = [
+        "1 Intake",
+        "2 Generic",
+        "3 Twin",
+        "4 Cases",
+        "5 Graph",
+        "6 Insights",
+        "7 Why",
+        "8 Admin",
+    ]
+    chips = []
+    for step in steps:
+        if step == current_step:
+            chips.append(f"<span style='padding:6px 10px;border-radius:999px;background:#1d4ed8;color:#f8fafc;font-weight:600'>{step}</span>")
+        else:
+            chips.append(f"<span style='padding:6px 10px;border-radius:999px;background:rgba(148,163,184,.22);color:#dbe7fb'>{step}</span>")
+    st.markdown("<div style='display:flex;gap:.45rem;flex-wrap:wrap;margin:.2rem 0 1rem 0;'>" + "".join(chips) + "</div>", unsafe_allow_html=True)
+
+
+def section_card(title: str, body: str) -> None:
+    st.markdown(
+        f"<div class='glass-card'><h4 style='margin:0 0 .35rem 0;'>{title}</h4><div class='muted'>{body}</div></div>",
+        unsafe_allow_html=True,
+    )

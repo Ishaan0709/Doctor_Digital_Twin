@@ -1,0 +1,137 @@
+from pathlib import Path
+from typing import Any, Dict, List
+
+import pandas as pd
+from openai import OpenAI
+
+from config import DATA_RAW_DIR, OPENAI_API_KEY, OPENAI_MODEL, PROMPTS_DIR
+from graph_rag.build_graph import build_knowledge_graph, graph_as_payload
+from graph_rag.reasoning import graph_reasoning
+from rag.rerank import rerank_cases
+from rag.retrieve import retrieve_similar_cases
+from twin_engine.personalization import extract_uniqueness_flags
+from twin_engine.twin_prompt import build_twin_prompt
+
+
+def _load_prompt(name: str) -> str:
+    return (PROMPTS_DIR / name).read_text(encoding="utf-8")
+
+
+def _safe_openai_chat(system_prompt: str, user_prompt: str) -> str:
+    if not OPENAI_API_KEY:
+        return "OpenAI API key not configured. Add OPENAI_API_KEY in .env to enable live AI generation."
+    try:
+        client = OpenAI(api_key=OPENAI_API_KEY)
+        response = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            temperature=0.2,
+            messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
+        )
+        return response.choices[0].message.content or ""
+    except Exception as exc:
+        return f"AI generation temporarily unavailable: {exc}"
+
+
+def patient_to_text(patient: Dict[str, Any]) -> str:
+    return (
+        f"Name: {patient.get('name')}\nAge: {patient.get('age')}\nGender: {patient.get('gender')}\n"
+        f"Height(cm): {patient.get('height_cm')} Weight(kg): {patient.get('weight_kg')}\n"
+        f"Symptoms: {patient.get('symptoms')}\nDuration: {patient.get('symptom_duration')}\n"
+        f"Medical history: {patient.get('medical_history')}\nFamily history: {patient.get('family_history')}\n"
+        f"Lifestyle: {patient.get('lifestyle')}\nCurrent medications: {patient.get('current_medications')}\n"
+        f"BP: {patient.get('bp')} LDL: {patient.get('ldl')} HbA1c: {patient.get('hba1c')}\nOptional notes: {patient.get('optional_notes', '')}"
+    )
+
+
+def summarize_patient(patient: Dict[str, Any]) -> Dict[str, Any]:
+    bmi = float(patient["weight_kg"]) / max((float(patient["height_cm"]) / 100.0) ** 2, 0.1)
+    return {"patient": patient["name"], "age": patient["age"], "bmi": round(bmi, 1), "risk_markers": {"BP": patient["bp"], "LDL": patient["ldl"], "HbA1c": patient["hba1c"]}}
+
+
+def generate_generic_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
+    patient_text = patient_to_text(patient)
+    narrative = _safe_openai_chat(_load_prompt("generic_gpt.txt"), patient_text)
+    return {
+        "consultation_summary": narrative,
+        "possible_concerns": [
+            "Possible ischemic symptoms requiring proper triage.",
+            "Cardiometabolic burden from LDL/HbA1c may elevate long-term risk.",
+            "Family-history and lifestyle factors may compound baseline risk.",
+        ],
+        "suggested_next_steps": [
+            "Obtain ECG and baseline cardiac enzymes where clinically indicated.",
+            "Assess blood pressure trend and optimize risk-factor control.",
+            "Arrange physician follow-up for risk stratification and test planning.",
+        ],
+        "risk_notes": [
+            "Guidance is informational and should be validated by a licensed clinician.",
+            "Escalate immediately if chest pain worsens, rest pain appears, or dyspnea increases.",
+        ],
+    }
+
+
+def generate_twin_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
+    patient_text = patient_to_text(patient)
+    retrieved = rerank_cases(retrieve_similar_cases(patient_text, top_k=5), patient_text)
+    graph = build_knowledge_graph()
+    graph_result = graph_reasoning(patient_text, graph)
+    uniqueness_flags = extract_uniqueness_flags(patient)
+
+    retrieved_text = "\n".join([f"Case {c.get('case_id')}: Dx {c.get('diagnosis')} | Decision {c.get('decision')} | Outcome {c.get('outcome')}" for c in retrieved])
+    prompt = build_twin_prompt(patient_text, retrieved_text, "\n".join(graph_result["evidence_summary"]), "\n".join(uniqueness_flags))
+    assessment = _safe_openai_chat(_load_prompt("doctor_twin.txt"), prompt)
+
+    return {
+        "assessment": assessment,
+        "unique_factors": uniqueness_flags,
+        "historical_patterns": retrieved,
+        "recommended_tests": [
+            "12-lead ECG and high-sensitivity troponin if active chest symptoms.",
+            "2D Echo for structural and functional baseline.",
+            "Stress imaging / TMT where symptom pattern and risk profile support ischemia workup.",
+            "Fasting lipid profile and renal panel before medication adjustment.",
+        ],
+        "immediate_actions": [
+            "Prioritize symptom safety triage and red-flag counseling.",
+            "Start or optimize preventive risk control in clinician-supervised plan.",
+            "Reconcile medications for conflict and adherence.",
+        ],
+        "follow_up_plan": [
+            "Follow-up within 3-7 days for response and risk review.",
+            "Escalate earlier if rest pain, syncope, or worsening dyspnea appears.",
+            "Reassess LDL/HbA1c trajectory and prevention targets in 6-12 weeks.",
+        ],
+        "confidence_score": round(min(0.98, 0.6 + 0.07 * len(retrieved) + 0.03 * len(graph_result["links"])), 2),
+        "graph_evidence": graph_result,
+        "graph_payload": graph_as_payload(graph),
+    }
+
+
+def get_case_matches(patient: Dict[str, Any]) -> List[Dict[str, Any]]:
+    return retrieve_similar_cases(patient_to_text(patient), top_k=8)
+
+
+def get_graph_payload(patient: Dict[str, Any]) -> Dict[str, Any]:
+    graph = build_knowledge_graph()
+    reasoning = graph_reasoning(patient_to_text(patient), graph)
+    payload = graph_as_payload(graph)
+    payload["evidence_summary"] = reasoning["evidence_summary"]
+    return payload
+
+
+def dataset_stats() -> Dict[str, int]:
+    def count_rows(name: str) -> int:
+        path = DATA_RAW_DIR / name
+        if not path.exists():
+            return 0
+        try:
+            return len(pd.read_csv(path))
+        except Exception:
+            return 0
+
+    return {
+        "doctor_cases": count_rows("doctor_cases_vimlesh_pandey.csv"),
+        "patient_profiles": count_rows("patient_profiles.csv"),
+        "graph_nodes": count_rows("graph_nodes.csv"),
+        "graph_edges": count_rows("graph_edges.csv"),
+    }

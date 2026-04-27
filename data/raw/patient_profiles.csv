@@ -1,0 +1,121 @@
+patient_id,age,sex,chief_complaint,history,medications,ldl,hba1c
+P001,77,F,shortness of breath,diabetes,Aspirin,139.4,9.0
+P002,35,M,chest pain on exertion,"hypertension, sedentary lifestyle","Amlodipine, Bisoprolol",185.6,9.4
+P003,50,M,dizziness,"family history CAD, obesity, diabetes",Rosuvastatin,156.1,6.3
+P004,28,M,chest heaviness on stairs,"obesity, sedentary lifestyle",Aspirin,167.8,8.9
+P005,78,F,chest heaviness on stairs,"diabetes, high LDL, hypertension","Bisoprolol, Telmisartan, Amlodipine",111.9,9.0
+P006,73,F,palpitations,"smoker, CKD stage 2, family history CAD","Amlodipine, Rosuvastatin, Metformin",118.6,8.9
+P007,32,M,chest heaviness on stairs,none,"Metformin, Amlodipine",112.1,7.0
+P008,75,M,ankle swelling,"obesity, hypertension, family history CAD",Amlodipine,174.9,6.1
+P009,52,M,palpitations,none,"Aspirin, Bisoprolol",109.9,6.0
+P010,68,M,fatigue,none,Telmisartan,119.6,7.3
+P011,77,F,palpitations,high LDL,Metformin,137.4,5.7
+P012,29,M,shortness of breath,CKD stage 2,Amlodipine,193.5,7.9
+P013,59,F,atypical chest discomfort,"hypertension, smoker, diabetes","Telmisartan, Bisoprolol",127.2,6.0
+P014,67,F,dizziness,family history CAD,"Telmisartan, Amlodipine, Metformin",131.7,6.1
+P015,41,M,dizziness,"high LDL, smoker, CKD stage 2","Aspirin, Rosuvastatin",160.3,7.4
+P016,57,M,palpitations,"family history CAD, sedentary lifestyle, smoker",Aspirin,138.4,10.1
+P017,76,M,chest heaviness on stairs,"family history CAD, hypertension, sedentary lifestyle",Amlodipine,170.1,6.4
+P018,82,F,ankle swelling,"family history CAD, hypertension",Amlodipine,150.6,4.9
+P019,48,F,ankle swelling,none,"Aspirin, Amlodipine",182.5,7.0
+P020,67,F,shortness of breath,CKD stage 2,"Bisoprolol, Metformin, Telmisartan",179.4,6.1
+P021,52,F,fatigue,smoker,Bisoprolol,121.1,7.6
+P022,48,F,chest heaviness on stairs,"hypertension, family history CAD","Metformin, Amlodipine, Bisoprolol",139.5,8.0
+P023,50,M,atypical chest discomfort,"diabetes, obesity, smoker",Bisoprolol,191.7,6.5
+P024,60,M,atypical chest discomfort,"family history CAD, high LDL, hypertension","Bisoprolol, Rosuvastatin, Telmisartan",159.8,4.7
+P025,56,M,fatigue,sedentary lifestyle,"Rosuvastatin, Bisoprolol, Metformin",175.1,7.5
+P026,64,M,palpitations,"smoker, high LDL","Telmisartan, Amlodipine",186.4,7.5
+P027,71,F,atypical chest discomfort,none,"Rosuvastatin, Metformin, Telmisartan",185.1,6.6
+P028,70,M,ankle swelling,none,"Metformin, Rosuvastatin",166.6,8.0
+P029,54,M,ankle swelling,"diabetes, family history CAD","Telmisartan, Bisoprolol",181.9,6.3
+P030,79,F,shortness of breath,"CKD stage 2, high LDL, diabetes","Metformin, Rosuvastatin",148.1,7.5
+P031,39,F,palpitations,none,"Amlodipine, Rosuvastatin",89.3,5.7
+P032,78,F,chest heaviness on stairs,"sedentary lifestyle, smoker","Bisoprolol, Metformin, Rosuvastatin",148.1,2.5
+P033,31,M,atypical chest discomfort,"sedentary lifestyle, smoker",Rosuvastatin,182.4,8.1
+P034,81,F,palpitations,"diabetes, obesity","Telmisartan, Aspirin",90.4,4.7
+P035,67,M,dizziness,"hypertension, obesity",Amlodipine,125.4,5.5
+P036,44,M,fatigue,"smoker, hypertension","Telmisartan, Rosuvastatin, Metformin",217.5,6.8
+P037,51,F,atypical chest discomfort,none,"Rosuvastatin, Metformin",205.1,9.8
+P038,51,F,palpitations,CKD stage 2,"Telmisartan, Bisoprolol",118.1,8.4
+P039,46,F,palpitations,none,"Metformin, Telmisartan, Amlodipine",179.1,6.3
+P040,65,M,palpitations,none,"Telmisartan, Bisoprolol, Metformin",142.9,9.0
+P041,72,M,chest pain on exertion,"smoker, CKD stage 2, hypertension","Bisoprolol, Aspirin",114.9,4.6
+P042,45,F,atypical chest discomfort,"hypertension, CKD stage 2",Aspirin,193.0,8.1
+P043,38,F,chest heaviness on stairs,none,"Telmisartan, Amlodipine",104.2,9.8
+P044,31,M,ankle swelling,"smoker, obesity, family history CAD","Bisoprolol, Rosuvastatin, Telmisartan",132.1,5.9
+P045,41,F,chest pain on exertion,"hypertension, CKD stage 2, high LDL","Aspirin, Telmisartan, Metformin",150.6,5.3
+P046,37,M,palpitations,sedentary lifestyle,"Telmisartan, Bisoprolol, Metformin",121.5,8.3
+P047,44,F,shortness of breath,"diabetes, sedentary lifestyle",Bisoprolol,125.6,7.9
+P048,32,M,palpitations,none,Aspirin,45.0,6.1
+P049,32,M,chest heaviness on stairs,"sedentary lifestyle, obesity, high LDL","Rosuvastatin, Metformin",123.0,7.4
+P050,66,M,chest heaviness on stairs,CKD stage 2,"Aspirin, Rosuvastatin, Metformin",198.1,6.6
+P051,33,M,fatigue,none,"Rosuvastatin, Aspirin",123.7,6.7
+P052,84,M,chest heaviness on stairs,"obesity, CKD stage 2",Bisoprolol,136.5,6.9
+P053,55,F,chest pain on exertion,"high LDL, diabetes","Amlodipine, Metformin, Bisoprolol",171.0,6.2
+P054,37,F,shortness of breath,"high LDL, family history CAD, smoker","Aspirin, Rosuvastatin",180.6,6.9
+P055,33,M,dizziness,"sedentary lifestyle, family history CAD, obesity",Rosuvastatin,121.6,7.2
+P056,47,F,chest heaviness on stairs,family history CAD,"Bisoprolol, Rosuvastatin",71.8,8.3
+P057,77,M,palpitations,none,"Aspirin, Bisoprolol, Amlodipine",165.8,6.8
+P058,45,F,palpitations,"CKD stage 2, smoker, sedentary lifestyle","Bisoprolol, Rosuvastatin, Aspirin",142.3,7.9
+P059,34,M,atypical chest discomfort,none,"Amlodipine, Telmisartan",157.1,8.0
+P060,41,M,fatigue,none,Metformin,101.1,8.0
+P061,51,F,palpitations,none,"Rosuvastatin, Bisoprolol, Metformin",150.7,7.0
+P062,39,F,chest pain on exertion,none,Amlodipine,114.3,6.1
+P063,34,M,shortness of breath,smoker,"Aspirin, Bisoprolol, Amlodipine",153.1,7.2
+P064,61,M,chest pain on exertion,"obesity, hypertension, smoker","Metformin, Bisoprolol",190.3,7.5
+P065,76,F,dizziness,none,"Aspirin, Bisoprolol",137.1,6.0
+P066,28,M,atypical chest discomfort,smoker,Amlodipine,154.1,6.0
+P067,84,F,dizziness,diabetes,"Telmisartan, Bisoprolol",57.3,5.8
+P068,66,M,palpitations,diabetes,"Bisoprolol, Amlodipine, Telmisartan",188.9,7.3
+P069,37,M,shortness of breath,"family history CAD, hypertension","Amlodipine, Metformin, Telmisartan",118.0,8.0
+P070,34,F,chest heaviness on stairs,none,"Aspirin, Rosuvastatin",180.7,6.1
+P071,49,F,shortness of breath,"high LDL, obesity",Metformin,105.9,7.8
+P072,41,M,ankle swelling,"obesity, family history CAD",Bisoprolol,151.1,7.2
+P073,53,F,atypical chest discomfort,none,"Rosuvastatin, Telmisartan, Bisoprolol",108.9,7.4
+P074,30,F,shortness of breath,"diabetes, smoker, hypertension",Aspirin,184.3,6.6
+P075,66,M,atypical chest discomfort,"obesity, smoker, diabetes","Bisoprolol, Rosuvastatin, Amlodipine",125.1,8.8
+P076,46,F,ankle swelling,none,"Bisoprolol, Aspirin, Telmisartan",121.5,6.5
+P077,35,F,shortness of breath,"CKD stage 2, obesity, diabetes",Aspirin,205.6,8.7
+P078,82,F,fatigue,none,"Metformin, Aspirin, Telmisartan",43.4,8.7
+P079,33,F,dizziness,"sedentary lifestyle, smoker, obesity","Bisoprolol, Metformin",169.2,6.6
+P080,30,M,shortness of breath,"obesity, diabetes","Aspirin, Rosuvastatin",141.0,5.4
+P081,55,M,fatigue,none,"Aspirin, Rosuvastatin, Bisoprolol",106.6,7.8
+P082,31,F,atypical chest discomfort,smoker,"Amlodipine, Telmisartan",151.9,6.4
+P083,82,M,fatigue,"high LDL, family history CAD, hypertension",Rosuvastatin,149.3,7.1
+P084,48,M,ankle swelling,high LDL,Telmisartan,153.6,6.1
+P085,30,M,shortness of breath,none,Metformin,122.4,8.0
+P086,32,M,chest pain on exertion,"CKD stage 2, obesity",Metformin,95.9,5.8
+P087,65,F,atypical chest discomfort,family history CAD,"Bisoprolol, Rosuvastatin",104.8,8.8
+P088,38,F,chest heaviness on stairs,CKD stage 2,"Telmisartan, Bisoprolol, Rosuvastatin",93.5,8.7
+P089,51,M,chest heaviness on stairs,smoker,"Metformin, Bisoprolol",122.6,8.6
+P090,53,F,palpitations,"diabetes, obesity, smoker",Aspirin,119.1,9.5
+P091,61,F,ankle swelling,none,"Metformin, Bisoprolol, Aspirin",196.5,6.7
+P092,84,M,shortness of breath,"diabetes, family history CAD","Telmisartan, Aspirin",167.8,8.1
+P093,57,F,fatigue,"family history CAD, obesity","Rosuvastatin, Telmisartan, Amlodipine",108.4,7.7
+P094,43,F,ankle swelling,CKD stage 2,"Bisoprolol, Rosuvastatin",107.7,7.9
+P095,47,M,ankle swelling,"CKD stage 2, high LDL, hypertension",Aspirin,122.2,8.3
+P096,30,F,palpitations,"sedentary lifestyle, smoker, high LDL","Telmisartan, Bisoprolol",72.2,7.4
+P097,48,M,fatigue,"hypertension, family history CAD",Rosuvastatin,176.0,5.4
+P098,41,F,palpitations,"sedentary lifestyle, hypertension, CKD stage 2",Amlodipine,165.3,8.1
+P099,40,F,palpitations,"diabetes, hypertension","Aspirin, Amlodipine",170.1,7.7
+P100,54,F,chest heaviness on stairs,"CKD stage 2, smoker","Rosuvastatin, Bisoprolol, Metformin",135.4,5.8
+P101,65,M,fatigue,smoker,Metformin,64.0,8.4
+P102,57,F,atypical chest discomfort,"CKD stage 2, sedentary lifestyle","Amlodipine, Metformin",126.8,7.2
+P103,67,F,dizziness,"obesity, smoker, sedentary lifestyle","Bisoprolol, Amlodipine",132.2,7.8
+P104,75,F,ankle swelling,none,"Metformin, Aspirin, Amlodipine",169.5,7.9
+P105,72,M,ankle swelling,"smoker, sedentary lifestyle","Rosuvastatin, Amlodipine",107.3,8.7
+P106,82,F,chest heaviness on stairs,none,"Amlodipine, Aspirin, Metformin",152.9,9.8
+P107,67,F,palpitations,none,"Aspirin, Telmisartan",143.0,6.4
+P108,79,F,chest heaviness on stairs,none,"Aspirin, Bisoprolol",83.8,8.3
+P109,41,M,ankle swelling,hypertension,Telmisartan,155.0,8.5
+P110,73,M,dizziness,family history CAD,Rosuvastatin,183.4,7.4
+P111,75,F,atypical chest discomfort,sedentary lifestyle,"Rosuvastatin, Aspirin, Amlodipine",169.8,6.2
+P112,48,F,palpitations,"smoker, hypertension",Metformin,107.5,7.5
+P113,36,M,dizziness,none,Amlodipine,174.1,7.9
+P114,51,M,shortness of breath,"high LDL, hypertension, CKD stage 2",Metformin,100.8,7.0
+P115,46,M,chest pain on exertion,CKD stage 2,Bisoprolol,190.1,6.8
+P116,78,M,shortness of breath,"sedentary lifestyle, obesity, diabetes","Metformin, Rosuvastatin, Telmisartan",106.2,7.2
+P117,49,F,dizziness,"obesity, hypertension, sedentary lifestyle",Amlodipine,132.7,4.8
+P118,68,F,palpitations,none,"Amlodipine, Telmisartan, Bisoprolol",171.7,6.9
+P119,45,M,ankle swelling,none,Metformin,118.6,7.1
+P120,35,F,atypical chest discomfort,"CKD stage 2, high LDL","Bisoprolol, Rosuvastatin",90.8,7.1

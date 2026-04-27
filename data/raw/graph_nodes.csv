@@ -1,0 +1,35 @@
+node_id,name,type
+1,chest pain on exertion,Disease
+2,shortness of breath,RiskFactor
+3,palpitations,Test
+4,fatigue,Decision
+5,dizziness,DoctorPreference
+6,ankle swelling,Symptom
+7,chest heaviness on stairs,Disease
+8,atypical chest discomfort,RiskFactor
+9,CAD,Test
+10,Angina,Decision
+11,Arrhythmia,DoctorPreference
+12,Heart Failure,Symptom
+13,diabetes,Disease
+14,hypertension,RiskFactor
+15,smoker,Test
+16,high LDL,Decision
+17,obesity,DoctorPreference
+18,family history CAD,Symptom
+19,sedentary lifestyle,Disease
+20,CKD stage 2,RiskFactor
+21,ECG,Test
+22,Echo,Decision
+23,Stress Test,DoctorPreference
+24,Holter,Symptom
+25,ECG + stress test,Disease
+26,Echo + lipid panel,RiskFactor
+27,Holter monitor,Test
+28,Urgent ER referral,Decision
+29,Medication optimization,DoctorPreference
+30,Lifestyle counseling,Symptom
+31,Follow-up in 2 weeks,Disease
+32,CT coronary angiography,RiskFactor
+33,prefers preventive care,Test
+34,escalates exertional pain,Decision

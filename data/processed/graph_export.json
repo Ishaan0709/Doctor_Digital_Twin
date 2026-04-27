@@ -1,0 +1,864 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "name": "chest pain on exertion",
+      "label": "chest pain on exertion",
+      "category": "Disease"
+    },
+    {
+      "id": "2",
+      "name": "shortness of breath",
+      "label": "shortness of breath",
+      "category": "RiskFactor"
+    },
+    {
+      "id": "3",
+      "name": "palpitations",
+      "label": "palpitations",
+      "category": "Test"
+    },
+    {
+      "id": "4",
+      "name": "fatigue",
+      "label": "fatigue",
+      "category": "Decision"
+    },
+    {
+      "id": "5",
+      "name": "dizziness",
+      "label": "dizziness",
+      "category": "DoctorPreference"
+    },
+    {
+      "id": "6",
+      "name": "ankle swelling",
+      "label": "ankle swelling",
+      "category": "Symptom"
+    },
+    {
+      "id": "7",
+      "name": "chest heaviness on stairs",
+      "label": "chest heaviness on stairs",
+      "category": "Disease"
+    },
+    {
+      "id": "8",
+      "name": "atypical chest discomfort",
+      "label": "atypical chest discomfort",
+      "category": "RiskFactor"
+    },
+    {
+      "id": "9",
+      "name": "CAD",
+      "label": "CAD",
+      "category": "Test"
+    },
+    {
+      "id": "10",
+      "name": "Angina",
+      "label": "Angina",
+      "category": "Decision"
+    },
+    {
+      "id": "11",
+      "name": "Arrhythmia",
+      "label": "Arrhythmia",
+      "category": "DoctorPreference"
+    },
+    {
+      "id": "12",
+      "name": "Heart Failure",
+      "label": "Heart Failure",
+      "category": "Symptom"
+    },
+    {
+      "id": "13",
+      "name": "diabetes",
+      "label": "diabetes",
+      "category": "Disease"
+    },
+    {
+      "id": "14",
+      "name": "hypertension",
+      "label": "hypertension",
+      "category": "RiskFactor"
+    },
+    {
+      "id": "15",
+      "name": "smoker",
+      "label": "smoker",
+      "category": "Test"
+    },
+    {
+      "id": "16",
+      "name": "high LDL",
+      "label": "high LDL",
+      "category": "Decision"
+    },
+    {
+      "id": "17",
+      "name": "obesity",
+      "label": "obesity",
+      "category": "DoctorPreference"
+    },
+    {
+      "id": "18",
+      "name": "family history CAD",
+      "label": "family history CAD",
+      "category": "Symptom"
+    },
+    {
+      "id": "19",
+      "name": "sedentary lifestyle",
+      "label": "sedentary lifestyle",
+      "category": "Disease"
+    },
+    {
+      "id": "20",
+      "name": "CKD stage 2",
+      "label": "CKD stage 2",
+      "category": "RiskFactor"
+    },
+    {
+      "id": "21",
+      "name": "ECG",
+      "label": "ECG",
+      "category": "Test"
+    },
+    {
+      "id": "22",
+      "name": "Echo",
+      "label": "Echo",
+      "category": "Decision"
+    },
+    {
+      "id": "23",
+      "name": "Stress Test",
+      "label": "Stress Test",
+      "category": "DoctorPreference"
+    },
+    {
+      "id": "24",
+      "name": "Holter",
+      "label": "Holter",
+      "category": "Symptom"
+    },
+    {
+      "id": "25",
+      "name": "ECG + stress test",
+      "label": "ECG + stress test",
+      "category": "Disease"
+    },
+    {
+      "id": "26",
+      "name": "Echo + lipid panel",
+      "label": "Echo + lipid panel",
+      "category": "RiskFactor"
+    },
+    {
+      "id": "27",
+      "name": "Holter monitor",
+      "label": "Holter monitor",
+      "category": "Test"
+    },
+    {
+      "id": "28",
+      "name": "Urgent ER referral",
+      "label": "Urgent ER referral",
+      "category": "Decision"
+    },
+    {
+      "id": "29",
+      "name": "Medication optimization",
+      "label": "Medication optimization",
+      "category": "DoctorPreference"
+    },
+    {
+      "id": "30",
+      "name": "Lifestyle counseling",
+      "label": "Lifestyle counseling",
+      "category": "Symptom"
+    },
+    {
+      "id": "31",
+      "name": "Follow-up in 2 weeks",
+      "label": "Follow-up in 2 weeks",
+      "category": "Disease"
+    },
+    {
+      "id": "32",
+      "name": "CT coronary angiography",
+      "label": "CT coronary angiography",
+      "category": "RiskFactor"
+    },
+    {
+      "id": "33",
+      "name": "prefers preventive care",
+      "label": "prefers preventive care",
+      "category": "Test"
+    },
+    {
+      "id": "34",
+      "name": "escalates exertional pain",
+      "label": "escalates exertional pain",
+      "category": "Decision"
+    }
+  ],
+  "edges": [
+    {
+      "source": "1",
+      "target": "5",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "1",
+      "target": "6",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "2",
+      "target": "32",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "2",
+      "target": "8",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "2",
+      "target": "15",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "3",
+      "target": "33",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "3",
+      "target": "20",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "3",
+      "target": "14",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "3",
+      "target": "12",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "4",
+      "target": "26",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "4",
+      "target": "10",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "4",
+      "target": "22",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "5",
+      "target": "21",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "5",
+      "target": "34",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "5",
+      "target": "22",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "5",
+      "target": "16",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "5",
+      "target": "4",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "6",
+      "target": "34",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "6",
+      "target": "24",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "6",
+      "target": "33",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "7",
+      "target": "31",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "7",
+      "target": "30",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "8",
+      "target": "24",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "8",
+      "target": "20",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "8",
+      "target": "9",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "9",
+      "target": "33",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "9",
+      "target": "28",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "10",
+      "target": "24",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "10",
+      "target": "9",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "10",
+      "target": "15",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "11",
+      "target": "31",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "11",
+      "target": "28",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "11",
+      "target": "12",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "11",
+      "target": "22",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "12",
+      "target": "25",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "12",
+      "target": "30",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "12",
+      "target": "13",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "12",
+      "target": "21",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "12",
+      "target": "2",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "13",
+      "target": "19",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "14",
+      "target": "15",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "14",
+      "target": "29",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "15",
+      "target": "31",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "15",
+      "target": "29",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "16",
+      "target": "10",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "16",
+      "target": "7",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "17",
+      "target": "32",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "17",
+      "target": "14",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "17",
+      "target": "31",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "18",
+      "target": "7",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "18",
+      "target": "23",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "18",
+      "target": "14",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "18",
+      "target": "12",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "19",
+      "target": "13",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "19",
+      "target": "27",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "19",
+      "target": "12",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "19",
+      "target": "22",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "20",
+      "target": "25",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "20",
+      "target": "16",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "20",
+      "target": "30",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "20",
+      "target": "15",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "21",
+      "target": "17",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "21",
+      "target": "11",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "21",
+      "target": "32",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "21",
+      "target": "18",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "22",
+      "target": "13",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "22",
+      "target": "19",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "22",
+      "target": "14",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "23",
+      "target": "13",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "23",
+      "target": "17",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "23",
+      "target": "26",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "23",
+      "target": "29",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "24",
+      "target": "33",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "24",
+      "target": "9",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "24",
+      "target": "18",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "24",
+      "target": "31",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "24",
+      "target": "27",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "24",
+      "target": "6",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "24",
+      "target": "1",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "25",
+      "target": "32",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "25",
+      "target": "2",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "25",
+      "target": "21",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "26",
+      "target": "6",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "26",
+      "target": "18",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "26",
+      "target": "30",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "26",
+      "target": "14",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "26",
+      "target": "9",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "26",
+      "target": "2",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "27",
+      "target": "16",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "27",
+      "target": "20",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "27",
+      "target": "18",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "28",
+      "target": "11",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "28",
+      "target": "14",
+      "relation": "linked_to",
+      "weight": 1.0
+    },
+    {
+      "source": "29",
+      "target": "20",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "29",
+      "target": "23",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "29",
+      "target": "32",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "29",
+      "target": "11",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "30",
+      "target": "28",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "30",
+      "target": "23",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "30",
+      "target": "17",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "31",
+      "target": "5",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "32",
+      "target": "15",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "32",
+      "target": "17",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "32",
+      "target": "6",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "33",
+      "target": "25",
+      "relation": "increases_risk",
+      "weight": 1.0
+    },
+    {
+      "source": "33",
+      "target": "18",
+      "relation": "preferred_for",
+      "weight": 1.0
+    },
+    {
+      "source": "33",
+      "target": "8",
+      "relation": "managed_by",
+      "weight": 1.0
+    },
+    {
+      "source": "34",
+      "target": "15",
+      "relation": "suggests",
+      "weight": 1.0
+    },
+    {
+      "source": "34",
+      "target": "6",
+      "relation": "managed_by",
+      "weight": 1.0
+    }
+  ]
+}

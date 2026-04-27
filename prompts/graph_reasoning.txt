@@ -1,0 +1,3 @@
+Analyze patient evidence links using graph relationships.
+Prioritize cardiovascular risk propagation paths and symptom triggers.
+Explain relationship strength in clear, actionable terms.
