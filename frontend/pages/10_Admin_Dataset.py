@@ -7,7 +7,7 @@ from frontend.ui import apply_theme, render_top_nav, section_card
 
 st.set_page_config(page_title="Admin / Dataset", layout="wide")
 apply_theme()
-render_top_nav("8 Admin")
+render_top_nav("9 Admin")
 st.title("Admin / Dataset")
 st.caption("Operational intelligence for CardioTwin AI data assets")
 section_card(

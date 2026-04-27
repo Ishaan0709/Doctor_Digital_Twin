@@ -14,6 +14,11 @@ section_card(
 if "patient" not in st.session_state:
     st.session_state.patient = {}
 
+# If portal intake already exists, reuse it to avoid duplicate data entry.
+portal_patient = st.session_state.get("portal_patient")
+if portal_patient and not st.session_state.patient:
+    st.session_state.patient = dict(portal_patient)
+
 with st.form("patient_intake_form"):
     st.markdown("#### Core Demographics & Vitals")
     c1, c2, c3 = st.columns(3)

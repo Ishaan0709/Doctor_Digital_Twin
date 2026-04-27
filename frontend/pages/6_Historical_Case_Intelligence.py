@@ -4,7 +4,7 @@ from frontend.ui import apply_theme, render_top_nav, section_card
 
 st.set_page_config(page_title="Historical Case Intelligence", layout="wide")
 apply_theme()
-render_top_nav("4 Cases")
+render_top_nav("5 Cases")
 st.title("Historical Case Intelligence")
 st.caption("Top similar historical specialist cardiology cases")
 section_card(
@@ -22,7 +22,12 @@ if not matches:
     st.info("No cases retrieved yet.")
 else:
     for m in matches:
-        with st.expander(f"Case {m.get('case_id')} | Match Score: {m.get('match_score', 0):.2f}"):
+        with st.expander(f"Case {m.get('case_id')} | Similarity: {m.get('match_score', 0):.2f}"):
+            st.metric(
+                "Case Similarity Score",
+                f"{m.get('match_score', 0):.2f}",
+                help="FAISS cosine similarity between current patient embedding and case embedding (1.00 = very close).",
+            )
             st.write(f"**Symptoms:** {m.get('symptoms', 'NA')}")
             st.write(f"**Risk factors:** {m.get('risk_factors', 'NA')}")
             st.write(f"**Tests:** {m.get('tests', 'NA')}")
@@ -31,4 +36,4 @@ else:
             st.write(f"**Outcome:** {m.get('outcome', 'NA')}")
 
 if st.button("Open Graph Intelligence", type="primary"):
-    st.switch_page("pages/6_Graph_Intelligence.py")
+    st.switch_page("pages/7_Graph_Intelligence.py")

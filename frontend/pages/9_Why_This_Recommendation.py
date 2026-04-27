@@ -3,7 +3,7 @@ from frontend.ui import apply_theme, render_top_nav, section_card
 
 st.set_page_config(page_title="Why This Recommendation", layout="wide")
 apply_theme()
-render_top_nav("7 Why")
+render_top_nav("8 Why")
 st.title("Why This Recommendation")
 st.caption("Evidence traceability and confidence view")
 section_card(
@@ -32,7 +32,18 @@ st.subheader("Contraindication Checks")
 st.write("- Medication overlap reviewed for bleeding and renal safety concerns.")
 st.write("- Escalation advice linked to symptom worsening and red-flag patterns.")
 
-st.metric("Confidence Score", f"{twin.get('confidence_score', 0) * 100:.0f}%")
+cb = twin.get("confidence_breakdown", {})
+st.metric(
+    "Confidence Score",
+    f"{twin.get('confidence_score', 0) * 100:.0f}%",
+    help=(
+        "Confidence = min(0.98, 0.60 + 0.07*retrieved_cases + 0.03*graph_links). "
+        f"base={cb.get('base', 0.6):.2f}, retrieval={cb.get('retrieval_component', 0):.2f}, graph={cb.get('graph_component', 0):.2f}"
+    ),
+)
 
-if st.button("Open Admin / Dataset", type="primary"):
-    st.switch_page("pages/9_Admin_Dataset.py")
+c1, c2 = st.columns(2)
+if c1.button("Open Full Explainability Report", type="primary"):
+    st.switch_page("pages/11_Backend_Story.py")
+if c2.button("Open Admin / Dataset"):
+    st.switch_page("pages/10_Admin_Dataset.py")

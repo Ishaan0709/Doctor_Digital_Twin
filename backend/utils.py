@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from openai import OpenAI
@@ -11,6 +11,21 @@ from rag.rerank import rerank_cases
 from rag.retrieve import retrieve_similar_cases
 from twin_engine.personalization import extract_uniqueness_flags
 from twin_engine.twin_prompt import build_twin_prompt
+
+
+def confidence_breakdown(retrieved_count: int, graph_link_count: int) -> Dict[str, Any]:
+    base = 0.60
+    retrieval_component = 0.07 * retrieved_count
+    graph_component = 0.03 * graph_link_count
+    raw = base + retrieval_component + graph_component
+    final = round(min(0.98, raw), 2)
+    return {
+        "base": round(base, 2),
+        "retrieval_component": round(retrieval_component, 2),
+        "graph_component": round(graph_component, 2),
+        "raw_score": round(raw, 2),
+        "final_score": final,
+    }
 
 
 def _load_prompt(name: str) -> str:
@@ -80,6 +95,7 @@ def generate_twin_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
     retrieved_text = "\n".join([f"Case {c.get('case_id')}: Dx {c.get('diagnosis')} | Decision {c.get('decision')} | Outcome {c.get('outcome')}" for c in retrieved])
     prompt = build_twin_prompt(patient_text, retrieved_text, "\n".join(graph_result["evidence_summary"]), "\n".join(uniqueness_flags))
     assessment = _safe_openai_chat(_load_prompt("doctor_twin.txt"), prompt)
+    confidence = confidence_breakdown(len(retrieved), len(graph_result["links"]))
 
     return {
         "assessment": assessment,
@@ -101,10 +117,50 @@ def generate_twin_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
             "Escalate earlier if rest pain, syncope, or worsening dyspnea appears.",
             "Reassess LDL/HbA1c trajectory and prevention targets in 6-12 weeks.",
         ],
-        "confidence_score": round(min(0.98, 0.6 + 0.07 * len(retrieved) + 0.03 * len(graph_result["links"])), 2),
+        "confidence_score": confidence["final_score"],
+        "confidence_breakdown": confidence,
         "graph_evidence": graph_result,
         "graph_payload": graph_as_payload(graph),
     }
+
+
+def generate_followup_reply(mode: str, patient: Dict[str, Any], user_question: str, twin: Optional[Dict[str, Any]] = None) -> str:
+    """
+    mode: "general" or "specialist"
+    Returns a single assistant message continuing the consultation.
+    """
+    patient_text = patient_to_text(patient)
+    if mode == "specialist":
+        twin_context = ""
+        if twin:
+            twin_context = (
+                "Specialist assessment:\n"
+                f"{twin.get('assessment', '')}\n\n"
+                "Immediate actions:\n"
+                + "\n".join([f"- {x}" for x in twin.get("immediate_actions", [])])
+                + "\n\nFollow-up plan:\n"
+                + "\n".join([f"- {x}" for x in twin.get("follow_up_plan", [])])
+            )
+        system = (
+            "You are Dr. Vimlesh Pandey's AI Specialist Twin. "
+            "Write in a calm, professional clinical tone. "
+            "Be patient-first, explain reasoning simply, and be precise. "
+            "Never claim certainty; include safety escalation advice when needed. "
+            "Do not mention GPT or OpenAI. "
+            "If a clinician is required, clearly say so."
+        )
+        user = f"{patient_text}\n\n{twin_context}\n\nPatient question:\n{user_question}"
+        return _safe_openai_chat(system, user)
+
+    system = (
+        "You are a general medical AI assistant for decision-support. "
+        "Write in a clear, friendly, non-alarming tone. "
+        "Explain step-by-step, but keep it practical. "
+        "Never mention GPT or OpenAI. "
+        "Always include: when to seek urgent care if symptoms suggest an emergency."
+    )
+    user = f"{patient_text}\n\nPatient question:\n{user_question}"
+    return _safe_openai_chat(system, user)
 
 
 def get_case_matches(patient: Dict[str, Any]) -> List[Dict[str, Any]]:
