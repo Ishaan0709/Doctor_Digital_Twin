@@ -48,9 +48,7 @@ git clone https://github.com/Ishaan0709/Doctor_Digital_Twin.git
 cd Doctor_Digital_Twin
 ```
 
-That creates a folder named `Doctor_Digital_Twin`. Everything in this README — `setup.bat`, `backend`, `web`, `data` — is inside that folder. That folder is the project root.
-
-If the folder already exists on this machine under `Desktop\Doctor_twin\doctor-digital-twin`, you do not need to clone again. Open that inner folder. The extra `Doctor_twin` folder around it only contains shortcut scripts that jump into `doctor-digital-twin` and run the same `setup.bat` and `start.bat`.
+That creates one folder named `Doctor_Digital_Twin`. That folder is the whole project: `setup.bat`, `backend`, `web`, `data`, and this README. There is no second project folder and no second README.
 
 ### 2. Open it in VS Code
 
@@ -80,7 +78,7 @@ Still in that terminal:
 `setup.bat` does all of this, in order:
 
 1. Checks that Node.js is installed.
-2. Reuses a virtual environment if one already exists at `.venv` in this folder, or at `.venv` in the parent folder. Otherwise it creates `.venv` here with `py -3 -m venv` (or `python -m venv` if `py` is missing).
+2. Reuses `.venv` in this folder when it already exists. Otherwise it creates `.venv` here with `py -3 -m venv` (or `python -m venv` if `py` is missing).
 3. Upgrades pip and installs `requirements.txt` into that environment.
 4. Runs `npm install` and `npm run build` inside `web/`, which writes the static site to `web/dist`.
 5. If `.env` is missing, copies `.env.example` to `.env`. If `.env` already exists, it is left alone.
@@ -316,6 +314,7 @@ Doctor_Digital_Twin/          ← this is the GitHub repo root
 ├── .env                      ← your key. Not committed.
 ├── .env.example              ← the four variable names, no secrets
 ├── .gitignore
+├── .venv/                    ← Python environment. Created by setup. Not committed.
 ├── config.py                 ← paths, env loading, creates output folders
 ├── requirements.txt
 ├── setup.bat  setup.sh       ← first-time install and frontend build
@@ -338,10 +337,9 @@ Doctor_Digital_Twin/          ← this is the GitHub repo root
 └── web/                      ← React + Vite + TypeScript + Tailwind
     ├── public/               ← logo.png, doctor_photo.png
     ├── src/
-    └── dist/                 ← production build. Created by setup. Not committed.
+    ├── dist/                 ← production build. Created by setup. Not committed.
+    └── node_modules/         ← installed by setup. Not committed.
 ```
-
-On this computer the repo may sit inside `Desktop\Doctor_twin\doctor-digital-twin`. The parent `Doctor_twin` folder is only a wrapper: its `setup.bat`, `start.bat`, and `dev.bat` change into `doctor-digital-twin` and call the scripts above. Those wrapper files are not required on GitHub.
 
 ### Root files
 
@@ -414,7 +412,7 @@ On this computer the repo may sit inside `Desktop\Doctor_twin\doctor-digital-twi
 
 | File | Role |
 | --- | --- |
-| `resolve_venv.bat` | Sets `VENV` to this folder’s `.venv` if `Scripts\python.exe` exists, otherwise the parent folder’s `.venv`. Prints an error if neither exists. |
+| `resolve_venv.bat` | Finds `.venv\Scripts\python.exe` in this project. Prints an error and tells you to run `setup.bat` when it is missing. |
 | `dev_server.py` | Starts Uvicorn with `--reload` and `npm run dev` in one window, prefixes their logs, opens http://localhost:5173 when that port accepts a connection, and stops both process trees on exit. |
 
 ### `tests/`
@@ -434,7 +432,7 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
 .\.venv\Scripts\python.exe -m pytest --rootdir . -p no:cacheprovider -q tests
 ```
 
-If setup reused the parent folder’s virtual environment, call that `python.exe` instead of `.\.venv\Scripts\python.exe`. `PYTHONDONTWRITEBYTECODE=1` avoids writing `.pyc` files, which matters when the project lives in OneDrive.
+`PYTHONDONTWRITEBYTECODE=1` avoids writing `.pyc` files, which matters when the project folder is stored in OneDrive.
 
 ### `notebooks/`
 
