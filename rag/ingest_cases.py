@@ -9,7 +9,7 @@ def _first_existing(df: pd.DataFrame, candidates: list[str], default: str = "") 
     return pd.Series([default] * len(df), index=df.index, dtype="object")
 
 
-def ingest_cases() -> pd.DataFrame:
+def ingest_cases(persist: bool = True) -> pd.DataFrame:
     source = DATA_RAW_DIR / "doctor_cases_vimlesh_pandey.csv"
     df = pd.read_csv(source).fillna("")
 
@@ -37,5 +37,6 @@ def ingest_cases() -> pd.DataFrame:
         + " | Outcome: " + df["outcome"]
         + " | Notes: " + df["notes"]
     )
-    df.to_csv(DATA_PROCESSED_DIR / "cleaned_cases.csv", index=False)
+    if persist:
+        df.to_csv(DATA_PROCESSED_DIR / "cleaned_cases.csv", index=False)
     return df

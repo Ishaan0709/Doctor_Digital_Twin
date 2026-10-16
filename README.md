@@ -1,33 +1,43 @@
 # CardioTwin AI
 
-CardioTwin AI scales the reasoning of elite cardiologists using a digital twin of Dr. Vimlesh Pandey.
+Clinical decision-support demo of a digital twin of Dr. Vimlesh Pandey. It compares a general medical answer with specialist reasoning grounded in his historical cases and a cardiology knowledge graph.
 
-## Stack
-Python, Streamlit, FastAPI, OpenAI, Pandas, NumPy, FAISS, NetworkX, Plotly, python-dotenv
+This is not a diagnosis and not a substitute for a real doctor.
 
-## Install
-pip install -r requirements.txt
+## Run on Windows
 
-## Setup env
-1. Copy `.env.example` to `.env`
-2. Add `OPENAI_API_KEY`
+From this folder (`doctor-digital-twin`) or the `Doctor_twin` folder above it:
 
-## Run backend
-uvicorn backend.app:app --reload
+1. First time: `.\setup.bat`
+2. Every time after: `.\start.bat`
 
-## Run frontend
-streamlit run frontend/streamlit_app.py
+`start.bat` opens http://localhost:8000. For hot reload while editing the UI, use `.\dev.bat` (API on port 8000, Vite on port 5173).
 
-## Pages
-1. Home / Landing
-2. Patient Intake
-3. Generic GPT Consultation
-4. Dr. Vimlesh Pandey AI Twin
-5. Historical Case Intelligence
-6. Graph Intelligence
-7. Comparison Insights
-8. Why This Recommendation
-9. Admin / Dataset
+## Run on Mac or Linux
 
-## Note
-This is clinical decision support. It does not replace licensed medical care.
+```bash
+chmod +x setup.sh start.sh dev.sh
+./setup.sh
+./start.sh
+```
+
+## Environment
+
+Copy `.env.example` to `.env` if setup did not do it, then set:
+
+| Variable | Purpose |
+| --- | --- |
+| `OPENAI_API_KEY` | Live answers and embeddings. Leave empty to run with a local fallback message and TF-IDF search. |
+| `OPENAI_MODEL` | Chat model. Default `gpt-4o-mini`. |
+| `OPENAI_EMBEDDING_MODEL` | Embedding model. Default `text-embedding-3-small`. |
+| `APP_ENV` | `development` or `production`. |
+
+Do not commit `.env`.
+
+## What is where
+
+- `web/` is the React app. Doctor photo and logo live in `web/public`.
+- `backend/` is the API. It also serves `web/dist`.
+- `MIGRATION_NOTES.md` lists every screen and the accuracy changes.
+
+The old Streamlit UI has been removed. Nothing in `data/` was changed.

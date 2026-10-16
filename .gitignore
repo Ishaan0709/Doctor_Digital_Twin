@@ -5,6 +5,9 @@ __pycache__/
 venv/
 *.pkl
 *.index
+node_modules/
+web/dist/
+web/node_modules/
 outputs/logs/*
 outputs/reports/*
 outputs/demo_exports/*

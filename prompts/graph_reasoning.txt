@@ -1,3 +1,4 @@
 Analyze patient evidence links using graph relationships.
 Prioritize cardiovascular risk propagation paths and symptom triggers.
 Explain relationship strength in clear, actionable terms.
+Cite the relationship name (for example suggests, managed_by, preferred_for) and do not treat a weak or missing link as a diagnosis.

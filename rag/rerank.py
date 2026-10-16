@@ -9,6 +9,9 @@ def rerank_cases(cases, patient_text: str):
             bonus += 0.08
         if "cad" in t and "cad" in d:
             bonus += 0.1
+        risk = str(c.get("risk_factors", "")).lower()
+        if any(k in t and k in risk for k in ["hypertension", "smoker", "obesity", "ckd", "family history"]):
+            bonus += 0.04
         return bonus
 
     enriched = []

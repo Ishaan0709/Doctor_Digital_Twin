@@ -36,3 +36,13 @@ def build_knowledge_graph() -> nx.DiGraph:
 
 def graph_as_payload(g: nx.DiGraph):
     return {"nodes": [{"id": n, **g.nodes[n]} for n in g.nodes], "edges": [{"source": u, "target": v, **g.edges[u, v]} for u, v in g.edges]}
+
+
+_CACHED_GRAPH: nx.DiGraph | None = None
+
+
+def get_cached_graph() -> nx.DiGraph:
+    global _CACHED_GRAPH
+    if _CACHED_GRAPH is None:
+        _CACHED_GRAPH = build_knowledge_graph()
+    return _CACHED_GRAPH
