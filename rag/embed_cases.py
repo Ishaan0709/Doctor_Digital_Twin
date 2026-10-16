@@ -6,8 +6,8 @@ from config import OPENAI_API_KEY, OPENAI_EMBEDDING_MODEL
 
 
 class Embedder:
-    def __init__(self) -> None:
-        self.use_openai = bool(OPENAI_API_KEY)
+    def __init__(self, force_local: bool = False) -> None:
+        self.use_openai = bool(OPENAI_API_KEY) and not force_local
         self.vectorizer = TfidfVectorizer(max_features=512)
         self.client = OpenAI(api_key=OPENAI_API_KEY) if self.use_openai else None
 

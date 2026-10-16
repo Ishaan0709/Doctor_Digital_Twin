@@ -22,14 +22,31 @@ def save_index(index_obj: Dict) -> None:
         pickle.dump(index_obj["metadata"], f)
 
 
+# OneDrive can leave a file "offline" while still reporting a size.
+# Reading it then blocks until a cloud timeout, so skip those files.
+_OFFLINE_ATTR = 0x1000
+_RECALL_ATTR = 0x400000
+
+
+def _cloud_only(path) -> bool:
+    attrs = getattr(path.stat(), "st_file_attributes", 0)
+    return bool(attrs & (_OFFLINE_ATTR | _RECALL_ATTR))
+
+
 def load_index() -> Dict:
     ip = DATA_PROCESSED_DIR / "cases.index"
     mp = DATA_PROCESSED_DIR / "embeddings_cache.pkl"
     if not ip.exists() or not mp.exists():
-        return {"index": None, "metadata": []}
-    with open(mp, "rb") as f:
-        meta = pickle.load(f)
-    return {"index": faiss.read_index(str(ip)), "metadata": meta}
+        return {"index": None, "metadata": [], "unreadable": False}
+    if _cloud_only(ip) or _cloud_only(mp):
+        return {"index": None, "metadata": [], "unreadable": True}
+    try:
+        with open(mp, "rb") as f:
+            meta = pickle.load(f)
+        return {"index": faiss.read_index(str(ip)), "metadata": meta, "unreadable": False}
+    except OSError:
+        # Leave the files in place and let the caller build a memory index.
+        return {"index": None, "metadata": [], "unreadable": True}
 
 
 def search_index(index_obj: Dict, query_vector: np.ndarray, top_k: int = 5) -> List[Dict]:

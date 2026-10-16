@@ -1,6 +1,11 @@
+import threading
+
 from rag.ingest_cases import ingest_cases
 from rag.embed_cases import Embedder
 from rag.vector_store import build_faiss_index, load_index, save_index, search_index
+
+_LOCK = threading.Lock()
+_STATE: dict = {"embedder": None, "index": None}
 
 
 def _build_and_save_index(embedder: Embedder) -> None:
@@ -18,21 +23,57 @@ def initialize_rag(embedder: Embedder) -> None:
     _build_and_save_index(embedder)
 
 
-def retrieve_similar_cases(patient_context: str, top_k: int = 5):
-    embedder = Embedder()
-    initialize_rag(embedder)
-    index_obj = load_index()
+def warm_index() -> None:
+    """Load the FAISS index and embedder once per process."""
+    with _LOCK:
+        _ensure_locked()
 
+
+def _memory_index(embedder: Embedder):
+    df = ingest_cases(persist=False)
+    vectors = embedder.embed_texts(df["rag_text"].tolist())
+    metadata_cols = ["case_id", "symptoms", "risk_factors", "tests", "diagnosis", "decision", "outcome"]
+    metadata = df[metadata_cols].to_dict(orient="records")
+    return build_faiss_index(vectors, metadata)
+
+
+def _ensure_locked() -> None:
+    embedder = _STATE["embedder"]
+    if embedder is None:
+        embedder = Embedder()
+        _STATE["embedder"] = embedder
+    if _STATE["index"] is not None:
+        return
+
+    loaded = load_index()
+    if loaded.get("unreadable"):
+        # Do not overwrite data/processed. A local TF-IDF index is enough to search.
+        local = Embedder(force_local=True)
+        _STATE["embedder"] = local
+        _STATE["index"] = _memory_index(local)
+        return
+
+    initialize_rag(embedder)
     if not embedder.use_openai:
         df = ingest_cases()
-        _ = embedder.embed_texts(df["rag_text"].tolist())
+        embedder.embed_texts(df["rag_text"].tolist())
+    _STATE["index"] = load_index()
+
+
+def retrieve_similar_cases(patient_context: str, top_k: int = 5):
+    with _LOCK:
+        _ensure_locked()
+        embedder = _STATE["embedder"]
+        index_obj = _STATE["index"]
 
     qvec = embedder.embed_query(patient_context)
 
     # Handle embedding-model switches (e.g., TF-IDF index to OpenAI embeddings) gracefully.
     if index_obj["index"] is not None and qvec.shape[1] != index_obj["index"].d:
-        _build_and_save_index(embedder)
-        index_obj = load_index()
+        with _LOCK:
+            _build_and_save_index(embedder)
+            _STATE["index"] = load_index()
+            index_obj = _STATE["index"]
         qvec = embedder.embed_query(patient_context)
 
     return search_index(index_obj, qvec, top_k=top_k)
