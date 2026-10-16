@@ -11,6 +11,25 @@ The live product is a React site served by one FastAPI process. Open it at **htt
 
 ---
 
+## On this laptop
+
+This section is for the owner of this machine. Python, Node, the virtual environment, and the project are already here. You do not clone again and you do not reinstall.
+
+Open PowerShell and run:
+
+```powershell
+cd "C:\Users\ISHAAN SHARMA\OneDrive\Desktop\Doctor_twin\doctor-digital-twin"
+.\start.bat
+```
+
+- `.\start.bat` starts the app and opens http://localhost:8000. Leave that window open. Ctrl+C stops it.
+- `.\dev.bat` is the only other command you need while changing the website. It opens http://localhost:5173.
+- `.\setup.bat` is only if `start.bat` says the frontend is not built or the virtual environment is missing.
+
+The rest of this file is for someone else: install, clone from GitHub, open in VS Code, and how the project is built.
+
+---
+
 ## What you need installed
 
 Install these once, before you clone anything.
