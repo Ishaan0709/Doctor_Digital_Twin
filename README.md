@@ -9,11 +9,13 @@ This is decision support for learning and demonstration. It is not a diagnosis, 
 The live product is a React site served by one FastAPI process. 
 
 
-Open it at **https://doctor-digital-twin.vercel.app/**.
+Open it at https://doctor-digital-twin.vercel.app/.
+
 API linked through render 
 https://doctor-digital-twin.vercel.app/consultation
+
 https://cardiotwin-api-8coi.onrender.com/health
----
+
 
 ## On this laptop
 
