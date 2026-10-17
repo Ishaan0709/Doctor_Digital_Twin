@@ -6,9 +6,12 @@ CardioTwin AI is a clinical decision-support web app. It demonstrates a digital 
 - **Vimlesh Twin** answers in the doctor's style, grounded in similar historical cases and a cardiology knowledge graph, and it shows the sources, the graph links, and a confidence score.
 
 This is decision support for learning and demonstration. It is not a diagnosis, not a prescription, and not a substitute for a real doctor or emergency care. Worsening chest pain, pain at rest, fainting, or severe breathlessness needs urgent care.
-The live product is a React site served by one FastAPI process. Open it at **https://doctor-digital-twin.vercel.app/**.
+The live product is a React site served by one FastAPI process. 
+
+
+Open it at **https://doctor-digital-twin.vercel.app/**.
 API linked through render https://doctor-digital-twin.vercel.app/consultation
-https://cardiotwin-api-8coi.onrender.com/health
+                          https://cardiotwin-api-8coi.onrender.com/health
 ---
 
 ## On this laptop
