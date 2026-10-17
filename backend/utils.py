@@ -203,7 +203,7 @@ def _twin_plan_lists() -> Dict[str, List[str]]:
     }
 
 
-def prepare_twin_bundle(patient: Dict[str, Any], exclude_ids=None) -> Dict[str, Any]:
+def prepare_twin_bundle(patient: Dict[str, Any], exclude_ids=None, graph=None, style_text=None) -> Dict[str, Any]:
     patient_text = patient_to_text(patient)
     profile = profile_context(patient.get("profile_id"))
     if profile:
@@ -211,7 +211,8 @@ def prepare_twin_bundle(patient: Dict[str, Any], exclude_ids=None) -> Dict[str, 
     timeline = timeline_context(patient.get("profile_id"))
     questions = clarifying_questions(patient)
     retrieved = rerank_cases(retrieve_similar_cases(patient_text, top_k=5, exclude_ids=exclude_ids), patient_text)
-    graph = get_cached_graph()
+    if graph is None:
+        graph = get_cached_graph()
     graph_result = graph_reasoning(patient_text, graph)
     uniqueness_flags = extract_uniqueness_flags(patient)
     retrieved_text = "\n".join(_case_line(case) for case in retrieved) or "No similar cases retrieved."
@@ -220,7 +221,7 @@ def prepare_twin_bundle(patient: Dict[str, Any], exclude_ids=None) -> Dict[str, 
         retrieved_text,
         "\n".join(graph_result["evidence_summary"]),
         "\n".join(uniqueness_flags),
-        style_rules=style_rules_text(),
+        style_rules=style_rules_text() if style_text is None else style_text,
         timeline_context=timeline,
         clarifying_questions="\n".join(f"- {q}" for q in questions) if questions else "None flagged from empty fields.",
         patient_weighing=load_prompt("patient_summary.txt").strip(),
@@ -251,8 +252,8 @@ def prepare_twin_bundle(patient: Dict[str, Any], exclude_ids=None) -> Dict[str, 
     return payload
 
 
-def generate_twin_consultation(patient: Dict[str, Any], exclude_ids=None) -> Dict[str, Any]:
-    bundle = prepare_twin_bundle(patient, exclude_ids=exclude_ids)
+def generate_twin_consultation(patient: Dict[str, Any], exclude_ids=None, graph=None, style_text=None) -> Dict[str, Any]:
+    bundle = prepare_twin_bundle(patient, exclude_ids=exclude_ids, graph=graph, style_text=style_text)
     bundle["assessment"] = _safe_openai_chat(bundle["system_prompt"], bundle["user_prompt"])
     return bundle
 

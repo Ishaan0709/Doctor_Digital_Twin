@@ -14,6 +14,14 @@ def _sides(metrics):
             assert work["total"] == ((100 * work["passed"]) + (work["checks"] // 2)) // work["checks"]
 
 
+def test_perfect_twin_score_has_no_improve_text():
+    from twin_engine.compare_engine import _improve
+
+    assert _improve("Actionability", 100, 0) == ""
+    assert _improve("Actionability", 100, -5) == ""
+    assert _improve("Actionability", 50, 0)
+
+
 def test_compare_metrics_are_percents_of_checks():
     metrics = generate_comparison_metrics(
         {"consultation_summary": "basic", "possible_concerns": [], "suggested_next_steps": []},
