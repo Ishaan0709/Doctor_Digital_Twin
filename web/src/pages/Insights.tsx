@@ -55,9 +55,22 @@ function mark(value: number) {
 interface EvalSummary {
   n: number;
   test_precision: number | null;
+  test_precision_ci?: [number, number] | null;
   test_recall: number | null;
-  risk_agreement: number | null;
-  followup_agreement: number | null;
+  test_recall_ci?: [number, number] | null;
+  f1: number | null;
+  f1_ci?: [number, number] | null;
+  avg_tests: number | null;
+  avg_tests_ci?: [number, number] | null;
+}
+
+interface EvalExcluded {
+  graph_nodes_removed?: unknown[];
+  graph_edges_removed?: unknown[];
+  style_rules_removed?: unknown[];
+  graph_nodes_kept?: number;
+  graph_edges_kept?: number;
+  style_rules_kept?: number;
 }
 
 interface EvalPayload {
@@ -65,8 +78,10 @@ interface EvalPayload {
   holdout_size: number;
   source?: string;
   summary?: Record<string, EvalSummary> | null;
-  gold?: { tests: string; risk: string; followup: string } | null;
+  gold?: { tests: string; risk?: string; followup?: string; not_scored?: string } | null;
   judge?: { n: number; generic: EvalJudge; rag: EvalJudge; twin: EvalJudge } | null;
+  bootstrap?: { samples: number; level: number } | null;
+  excluded?: EvalExcluded | null;
 }
 
 interface EvalJudge {
@@ -78,6 +93,12 @@ interface EvalJudge {
 function shown(value: number | null | undefined) {
   if (value == null) return "—";
   return value.toFixed(2);
+}
+
+function metric(value: number | null | undefined, ci?: [number, number] | null) {
+  if (value == null) return "—";
+  if (!ci || ci.length < 2 || ci[0] == null || ci[1] == null) return value.toFixed(2);
+  return `${value.toFixed(2)} [${ci[0].toFixed(2)}, ${ci[1].toFixed(2)}]`;
 }
 
 function Ledger({ title, side, tone }: { title: string; side: CalcSide; tone: string }) {
@@ -136,7 +157,7 @@ function DepthMath({ scores, work }: { scores: { name: string; value: number }[]
   );
 }
 
-function Meter({ label, value, bar, text }: { label: string; value: number; bar: string; text: string }) {
+function Meter({ label, value, bar, text, passed, checks }: { label: string; value: number; bar: string; text: string; passed: number; checks: number }) {
   return (
     <div className="flex items-center gap-3 text-sm">
       <span className={`w-28 shrink-0 ${text}`}>{label}</span>
@@ -144,6 +165,7 @@ function Meter({ label, value, bar, text }: { label: string; value: number; bar:
         <div className={`h-full rounded-full transition-all duration-700 ${bar}`} style={{ width: `${value}%` }} />
       </div>
       <span className="w-8 shrink-0 text-right tabular-nums">{value}</span>
+      {checks > 0 && <span className="w-[6.5rem] shrink-0 text-right text-xs tabular-nums text-[#2c4060] dark:text-[#d5e4f0]">{passed} of {checks} checks</span>}
     </div>
   );
 }
@@ -152,6 +174,7 @@ const EVAL_ROWS = [
   ["generic", "Generic GPT"],
   ["rag", "GPT + retrieved cases"],
   ["twin", "Doctor's Twin"],
+  ["baseline", "Always ECG + echo + lipid panel"],
 ] as const;
 
 function Evaluation() {
@@ -168,7 +191,7 @@ function Evaluation() {
     <Card className="mt-4">
       <h2 className="text-base font-semibold">Evaluation</h2>
       <p className="mt-1 text-sm leading-6 text-[#2c4060] dark:text-[#d5e4f0]">
-        Thirty cases are held out of the doctor’s case file and excluded from retrieval. Generic GPT, Generic GPT with those same cases, and the Doctor’s Twin are each compared with the doctor’s recorded decision.
+        Thirty cases are held out of the doctor’s case file. They are left out of retrieval, and out of the graph and style rules used for this run. Generic GPT, Generic GPT with those same cases, and the Doctor’s Twin are each compared with the doctor’s recorded tests. The last row always recommends ECG, echo, and a lipid panel.
       </p>
       {failed && <p className="mt-3 text-sm text-[#0b1f3a] dark:text-white">The evaluation results could not be loaded.</p>}
       {report && !report.available && (
@@ -178,17 +201,20 @@ function Evaluation() {
       )}
       {report?.available && report.summary && (
         <>
-          <p className="mt-3 text-sm font-semibold text-[#0b1f3a] dark:text-white">{report.holdout_size} held-out cases</p>
+          <p className="mt-3 text-sm font-semibold text-[#0b1f3a] dark:text-white">
+            Sample size: {report.holdout_size} held-out cases. Intervals are {Math.round((report.bootstrap?.level ?? 0.95) * 100)}% bootstrap confidence intervals
+            {report.bootstrap?.samples ? ` from ${report.bootstrap.samples} resamples` : ""}.
+          </p>
           <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm text-[#0b1f3a] dark:text-white">
+            <table className="w-full min-w-[880px] text-left text-sm text-[#0b1f3a] dark:text-white">
               <thead className="text-[#123a6b] dark:text-[#8eb8e8]">
                 <tr>
                   <th className="py-2 pr-3 font-semibold">System</th>
                   <th className="py-2 pr-3 font-semibold">Cases scored</th>
                   <th className="py-2 pr-3 font-semibold">Test precision</th>
                   <th className="py-2 pr-3 font-semibold">Test recall</th>
-                  <th className="py-2 pr-3 font-semibold">Risk agreement</th>
-                  <th className="py-2 font-semibold">Follow-up agreement</th>
+                  <th className="py-2 pr-3 font-semibold">F1</th>
+                  <th className="py-2 font-semibold">Average tests</th>
                 </tr>
               </thead>
               <tbody>
@@ -198,19 +224,24 @@ function Evaluation() {
                     <tr key={key} className="border-t border-[#c5d7ea] dark:border-white/10">
                       <td className="py-2 pr-3">{label}</td>
                       <td className="py-2 pr-3 tabular-nums">{item?.n ?? "—"}</td>
-                      <td className="py-2 pr-3 tabular-nums">{shown(item?.test_precision)}</td>
-                      <td className="py-2 pr-3 tabular-nums">{shown(item?.test_recall)}</td>
-                      <td className="py-2 pr-3 tabular-nums">{shown(item?.risk_agreement)}</td>
-                      <td className="py-2 tabular-nums">{shown(item?.followup_agreement)}</td>
+                      <td className="py-2 pr-3 tabular-nums">{metric(item?.test_precision, item?.test_precision_ci)}</td>
+                      <td className="py-2 pr-3 tabular-nums">{metric(item?.test_recall, item?.test_recall_ci)}</td>
+                      <td className="py-2 pr-3 tabular-nums">{metric(item?.f1, item?.f1_ci)}</td>
+                      <td className="py-2 tabular-nums">{metric(item?.avg_tests, item?.avg_tests_ci)}</td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
           </div>
+          {report.excluded && (
+            <p className="mt-3 text-sm leading-6 text-[#2c4060] dark:text-[#d5e4f0]">
+              Held-out cases were removed from retrieval, from the eval graph, and from the style rules. Removed {report.excluded.graph_nodes_removed?.length ?? 0} graph nodes, {report.excluded.graph_edges_removed?.length ?? 0} graph edges, and {report.excluded.style_rules_removed?.length ?? 0} style rules.
+            </p>
+          )}
           {report.gold && (
             <p className="mt-3 text-sm leading-6 text-[#2c4060] dark:text-[#d5e4f0]">
-              Tests: {report.gold.tests} Risk: {report.gold.risk} Follow-up: {report.gold.followup}
+              Tests: {report.gold.tests} {report.gold.not_scored}
             </p>
           )}
           {report.judge && (
@@ -300,11 +331,11 @@ export default function Insights() {
                   <p className={`shrink-0 text-sm font-semibold ${winnerClass[factor.winner]}`}>{winnerLabel[factor.winner]}</p>
                 </div>
                 <div className="mt-3 space-y-2">
-                  <Meter label="Generic GPT" value={factor.generic} bar="bg-amber-400" text="text-amber-700 dark:text-amber-200" />
-                  <Meter label="Doctor's Twin" value={factor.twin} bar="bg-sky-400" text="text-sky-700 dark:text-sky-200" />
+                  <Meter label="Generic GPT" value={factor.generic} bar="bg-amber-400" text="text-amber-700 dark:text-amber-200" passed={factor.calculation?.generic.passed ?? 0} checks={factor.calculation?.generic.checks ?? 0} />
+                  <Meter label="Doctor's Twin" value={factor.twin} bar="bg-sky-400" text="text-sky-700 dark:text-sky-200" passed={factor.calculation?.twin.passed ?? 0} checks={factor.calculation?.twin.checks ?? 0} />
                 </div>
                 <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{factor.reason}</p>
-                {factor.improve && <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200"><span className="font-semibold">How to improve Doctor's Twin: </span>{factor.improve}</p>}
+                {factor.improve && factor.twin !== 100 && <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200"><span className="font-semibold">How to improve Doctor's Twin: </span>{factor.improve}</p>}
                 {factor.calculation && <Calculation factor={factor} />}
               </Card>
             ))}

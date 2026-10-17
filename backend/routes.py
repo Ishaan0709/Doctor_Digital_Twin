@@ -199,6 +199,8 @@ def eval_results() -> dict:
         "gold": data.get("gold"),
         "judge": data.get("judge"),
         "systems": data.get("systems"),
+        "bootstrap": data.get("bootstrap"),
+        "excluded": data.get("excluded"),
     }
 
 

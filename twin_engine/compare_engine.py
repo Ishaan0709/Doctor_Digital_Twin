@@ -347,6 +347,8 @@ def _reason(name: str, winner: str, generic_side: dict, twin_side: dict, signals
 
 
 def _improve(name: str, twin_score: int, gap: int) -> str:
+    if twin_score >= 100:
+        return ""
     if twin_score >= 75 and gap >= 10:
         return ""
     if name == "Personalization":
