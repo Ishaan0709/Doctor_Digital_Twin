@@ -37,9 +37,10 @@ Missing information to clarify:
 {clarifying_questions}
 
 Return a specialist-level assessment with:
-1. What is most likely going on, in calm plain language
-2. Numbered practical actions
-3. Follow-up timing
-4. Which historical cases and graph links you relied on
-5. Clarifying questions if information is thin
+1. Open with this patient by name, age, conditions, LDL, blood pressure, and medicines. Then state each uniqueness flag and why it changes the plan.
+2. For every recommendation, write one sentence in this shape: the finding, then because, then the graph relation you were given (source, relation, target), then the action. Use only relations from the graph evidence above.
+3. Numbered practical actions, using the exact test names from the graph when they appear there.
+4. Follow-up timing, including one line for worsening pain, pain at rest, fainting, or severe breathlessness.
+5. Which historical cases you relied on, by case id, and why each is only a partial match.
+6. Clarifying questions if information is thin.
 End with one sentence that this is not a substitute for an in-person doctor.

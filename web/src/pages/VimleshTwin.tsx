@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { streamConsult } from "../lib/api";
 import { useAppStore } from "../store/useAppStore";
 import type { TwinResult } from "../types";
-import { BulletList, Button, Card, Confidence, Disclaimer, Note, PageHeader, Skeleton, SourceList } from "../components/ui";
+import { RichText } from "../components/RichText";
+import { BulletList, Button, Card, Confidence, Disclaimer, Fold, PageHeader, Skeleton, SourceList } from "../components/ui";
 
 export default function VimleshTwin() {
   const patient = useAppStore((s) => s.patient);
@@ -43,47 +44,47 @@ export default function VimleshTwin() {
   const result = saved || (meta ? { ...meta, assessment: live } : null);
   return (
     <div>
-      <PageHeader eyebrow="3 · Twin" title="Dr. Vimlesh Pandey Specialist Twin" caption="Patient-first specialist reasoning powered by historical RAG and GraphRAG evidence." />
-      <div className="mb-4 flex items-center gap-4">
-        <img src="/doctor_photo.png" alt="Dr. Vimlesh Pandey" className="h-16 w-16 rounded-2xl object-cover" />
-        <Note title="How to read this page">Assessment is generated with current patient priority, then enriched with similar historical patterns and graph relationships. Historical cases are references, not copy-paste prescriptions.</Note>
-      </div>
+      <PageHeader eyebrow="Doctor's Twin" title="The consultation" caption="The answer is first. Open a section when you want the cases, the plan, or the confidence number." />
       {!result && loading && <Skeleton className="h-48" />}
       {result && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <Card>
-            <h2 className="font-semibold">Specialist assessment</h2>
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-7">{result.assessment || (loading ? "Writing…" : "")}</p>
-            {!!result.clarifying_questions?.length && (
-              <div className="mt-4"><h3 className="text-sm font-semibold">Clarifying questions</h3><BulletList items={result.clarifying_questions} /></div>
-            )}
-            <SourceList sources={result.sources} />
+            <div className="mb-4 flex items-center gap-3">
+              <img src="/doctor_photo.jpg?v=3" alt="Dr. Vimlesh Pandey" className="h-12 w-12 rounded-full object-cover object-top" />
+              <p className="text-sm text-[#5c6b7a] dark:text-[#b7c0c7]">Dr. Vimlesh Pandey’s twin</p>
+            </div>
+            {result.assessment ? <RichText text={result.assessment} /> : loading ? <p className="mt-3 text-sm">Writing…</p> : null}
             <Disclaimer text={result.disclaimer} />
           </Card>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card><h2 className="font-semibold">Why this patient is unique</h2><div className="mt-3"><BulletList items={result.unique_factors} /></div></Card>
-            <Card>
-              <h2 className="font-semibold">Historical patterns considered</h2>
-              <ul className="mt-3 space-y-2 text-sm">
-                {result.historical_patterns?.map((item) => (
-                  <li key={String(item.case_id)} title="Final similarity = base FAISS cosine score + rerank bonus from symptom and diagnosis overlap.">
-                    Case {item.case_id}: {item.diagnosis} <span className="text-sky-600 dark:text-sky-300">(similarity {Number(item.final_match_score ?? item.match_score ?? 0).toFixed(2)})</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card><h2 className="font-semibold">Recommended tests</h2><div className="mt-3"><BulletList items={result.recommended_tests} /></div></Card>
-            <Card><h2 className="font-semibold">Immediate actions</h2><div className="mt-3"><BulletList items={result.immediate_actions} /></div></Card>
-            <Card><h2 className="font-semibold">Follow-up plan</h2><div className="mt-3"><BulletList items={result.follow_up_plan} /></div></Card>
-          </div>
-          <Confidence result={result} />
+          {!!result.clarifying_questions?.length && (
+            <Fold title="Still to clarify">
+              <BulletList items={result.clarifying_questions} />
+            </Fold>
+          )}
+          <Fold title="Past cases used">
+            <ul className="space-y-2 text-sm">
+              {result.historical_patterns?.map((item) => (
+                <li key={String(item.case_id)}>Case {item.case_id}: {item.diagnosis} ({Number(item.final_match_score ?? item.match_score ?? 0).toFixed(2)})</li>
+              ))}
+            </ul>
+            <SourceList sources={result.sources} />
+          </Fold>
+          <Fold title="Tests, actions, and follow-up">
+            <div className="grid gap-4 md:grid-cols-3">
+              <div><h3 className="font-semibold">Tests</h3><BulletList items={result.recommended_tests} /></div>
+              <div><h3 className="font-semibold">Actions</h3><BulletList items={result.immediate_actions} /></div>
+              <div><h3 className="font-semibold">Follow-up</h3><BulletList items={result.follow_up_plan} /></div>
+            </div>
+          </Fold>
+          <Fold title="Confidence">
+            <Confidence result={result} />
+          </Fold>
         </div>
       )}
       <div className="mt-4 flex flex-wrap gap-3">
-        <Button variant="primary" onClick={() => navigate("/compare")}>Open GPT vs Twin Difference</Button>
+        <Button variant="primary" onClick={() => navigate("/compare")}>See them side by side</Button>
         <Button onClick={() => { setTwin(null); setMeta(null); setRun((n) => n + 1); }}>Regenerate</Button>
+        <Link className="self-center text-sm underline" to="/studio">All comparison pages</Link>
       </div>
     </div>
   );

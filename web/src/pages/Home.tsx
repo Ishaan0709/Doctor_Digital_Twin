@@ -1,45 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import { Button, Card } from "../components/ui";
-
-const metrics = [
-  ["AI Modes", "2", "Generic + Twin"],
-  ["Reasoning Layers", "3", "Patient + RAG + GraphRAG"],
-  ["Audience", "3", "Teachers, leaders, doctors"],
-];
+import { Button } from "../components/ui";
 
 export default function Home() {
   const navigate = useNavigate();
   return (
-    <div className="space-y-5">
-      <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-card dark:border-white/10 dark:bg-white/[0.06] md:p-8">
-        <div className="grid items-center gap-6 md:grid-cols-[1.4fr_0.8fr]">
-          <div>
-            <img src="/logo.png" alt="" className="mb-4 h-14 w-14 rounded-2xl object-cover" />
-            <h1 className="text-4xl font-semibold tracking-tight">CardioTwin AI</h1>
-            <p className="mt-3 max-w-xl text-lg text-slate-600 dark:text-slate-300">Scaling the reasoning of elite cardiologists using AI digital twins.</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Button variant="primary" onClick={() => navigate("/patient")}>Start Analysis</Button>
-              <Button onClick={() => navigate("/consultation")}>Open Consultation Portal</Button>
-            </div>
-          </div>
-          <img src="/doctor_photo.png" alt="Dr. Vimlesh Pandey" className="h-64 w-full rounded-2xl object-cover" />
+    <div className="space-y-10">
+      <section className="grid items-center gap-10 md:grid-cols-[1.15fr_0.85fr]">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#123a6b] dark:text-[#8eb8e8]">Dr. Vimlesh Pandey</p>
+          <h1 className="mt-3 text-4xl font-semibold leading-tight text-[#0b1f3a] dark:text-white md:text-5xl">Same doctor. Same expertise. Whenever you need it.</h1>
+          <p className="mt-5 max-w-xl text-lg leading-8 text-[#2c4060] dark:text-[#d5e4f0]">
+            Consult your doctor’s twin anytime, built on their own knowledge, and get the guidance you need to feel better, sooner. Your doctor still oversees your care.
+          </p>
+          <Button className="mt-8" variant="primary" onClick={() => navigate("/patient")}>Begin a consultation</Button>
         </div>
+        <img src="/doctor_photo.jpg?v=3" alt="Dr. Vimlesh Pandey" className="aspect-[4/5] w-full rounded-[2rem] object-cover object-top" />
       </section>
-      <div className="grid gap-3 md:grid-cols-3">
-        {metrics.map(([label, value, hint]) => (
-          <Card key={label}>
-            <p className="text-sm text-slate-500">{label}</p>
-            <p className="text-3xl font-semibold">{value}</p>
-            <p className="text-sm text-sky-700 dark:text-sky-200">{hint}</p>
-          </Card>
-        ))}
-      </div>
-      <div className="grid gap-3 md:grid-cols-2">
-        <Card><h2 className="font-semibold">What problem it solves</h2><p className="mt-2 text-sm text-slate-600 dark:text-slate-300">CardioTwin AI standardizes expert preventive cardiology reasoning into an auditable intelligence layer for high-stakes decision support.</p></Card>
-        <Card><h2 className="font-semibold">Why doctors need it</h2><p className="mt-2 text-sm text-slate-600 dark:text-slate-300">It accelerates triage quality, risk interpretation, and follow-up planning while keeping physician judgment central.</p></Card>
-        <Card><h2 className="font-semibold">Why hospitals need it</h2><p className="mt-2 text-sm text-slate-600 dark:text-slate-300">It improves consistency, governance visibility, and scalable specialist-aligned care pathways.</p></Card>
-        <Card><h2 className="font-semibold">Key features</h2><p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Patient intake, generic consultation, digital twin consultation, historical case intelligence, graph evidence, comparison, and recommendation traceability.</p></Card>
-      </div>
+      <section className="rounded-[2rem] bg-[#e7f1fb] px-6 py-8 text-[#0b1f3a] md:px-10 dark:bg-[#16345c] dark:text-[#e7f0fa]">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#123a6b] dark:text-[#9ec4ef]">Side by side</p>
+        <h2 className="mt-2 text-3xl font-semibold text-[#0b1f3a] dark:text-white">A general answer, next to the Doctor’s Twin.</h2>
+        <p className="mt-3 max-w-2xl text-[#1a4a7a] dark:text-[#d5e4f0]">
+          Your consultation stays on your own visit. Open the comparison to place a general AI answer beside the Doctor’s Twin, with the graph and a short reason for each score.
+        </p>
+        <button className="mt-6 rounded-full bg-[#123a6b] px-6 py-3 text-base font-semibold text-white hover:bg-[#0c2d56]" onClick={() => navigate("/studio")}>
+          Open the comparison
+        </button>
+      </section>
     </div>
   );
 }

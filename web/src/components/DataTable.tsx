@@ -25,7 +25,7 @@ export function DataTable<T extends Record<string, unknown>>({
   const [sortKey, setSortKey] = useState(columns[0]?.key || "");
   const [dir, setDir] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
-  const pageSize = 8;
+  const pageSize = 20;
 
   const filters = useMemo(() => {
     if (!filterKey) return [];
@@ -64,9 +64,9 @@ export function DataTable<T extends Record<string, unknown>>({
           </select>
         )}
       </div>
-      <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10">
-        <table className="min-w-full text-left text-sm">
-          <thead className="bg-slate-100/80 dark:bg-white/5">
+      <div className="max-h-[70vh] overflow-auto rounded-2xl border border-slate-200 dark:border-white/10">
+        <table className="min-w-full text-left text-sm text-[#0b1f3a] dark:text-[#e7f0fa]">
+          <thead className="sticky top-0 bg-[#e7f1fb] text-[#0b1f3a] dark:bg-[#16345c] dark:text-white">
             <tr>
               {columns.map((column) => (
                 <th key={column.key} className="px-3 py-2 font-semibold">
@@ -106,12 +106,12 @@ export function DataTable<T extends Record<string, unknown>>({
           </tbody>
         </table>
       </div>
-      <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
-        <span>{visible.length} rows</span>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-[#0b1f3a] dark:text-[#e7f0fa]">
+        <span>{visible.length} rows. Scroll the table, or use the pages.</span>
         <div className="flex gap-2">
-          <button disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>Previous</button>
-          <span>{page + 1} / {pages}</span>
-          <button disabled={page + 1 >= pages} onClick={() => setPage((p) => p + 1)}>Next</button>
+          <button className="rounded-full border border-[#c5d7ea] px-3 py-1 disabled:opacity-40 dark:border-white/20" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>Previous</button>
+          <span className="self-center">{page + 1} / {pages}</span>
+          <button className="rounded-full border border-[#c5d7ea] px-3 py-1 disabled:opacity-40 dark:border-white/20" disabled={page + 1 >= pages} onClick={() => setPage((p) => p + 1)}>Next</button>
         </div>
       </div>
     </div>

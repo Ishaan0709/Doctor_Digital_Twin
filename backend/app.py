@@ -58,9 +58,9 @@ def spa(full_path: str = ""):
         raise HTTPException(status_code=404, detail="Not found")
     index = DIST / "index.html"
     if not index.exists():
-        raise HTTPException(status_code=503, detail="Frontend is not built yet. Run setup.bat, then start.bat.")
+        raise HTTPException(status_code=503, detail="Frontend is not built yet. Run: python run.py")
     if full_path:
         asset = _safe_file(full_path)
         if asset is not None:
-            return FileResponse(asset)
-    return FileResponse(index)
+            return FileResponse(asset, headers={"Cache-Control": "no-cache"})
+    return FileResponse(index, headers={"Cache-Control": "no-cache"})

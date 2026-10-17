@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { streamConsult } from "../lib/api";
 import { useAppStore } from "../store/useAppStore";
 import type { GenericResult } from "../types";
+import { RichText } from "../components/RichText";
 import { BulletList, Button, Card, Disclaimer, Note, PageHeader, Skeleton, SourceList } from "../components/ui";
 
 export default function GenericBaseline() {
@@ -52,7 +53,7 @@ export default function GenericBaseline() {
         <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
           <Card>
             <h2 className="font-semibold">Generic model summary</h2>
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-7">{result.consultation_summary || (loading ? "Writing…" : "")}</p>
+            {result.consultation_summary ? <RichText text={result.consultation_summary} /> : loading ? <p className="mt-3 text-sm">Writing…</p> : null}
             <SourceList sources={result.sources} />
             <Disclaimer text={result.disclaimer} />
           </Card>
