@@ -230,6 +230,8 @@ python3 run.py
 
 Open http://localhost:8000. For hot reload, `python3 run.py dev`.
 
+The public site is https://doctor-digital-twin.vercel.app/. Its API is https://cardiotwin-api-8coi.onrender.com. A browser on localhost still calls the local API. Any other host calls Render. Render allows that Vercel address. Pushing `main` updates both.
+
 ---
 
 ## A walkthrough you can demo
