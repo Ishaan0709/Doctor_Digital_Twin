@@ -21,7 +21,14 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(title="CardioTwin AI", version="2.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:8000", "http://127.0.0.1:8000"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "https://doctor-digital-twin.vercel.app",
+    ],
+    allow_origin_regex=r"https://doctor-digital-twin[a-z0-9-]*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

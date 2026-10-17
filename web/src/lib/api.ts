@@ -12,8 +12,16 @@ export interface StreamEvent {
   detail?: string;
 }
 
+const RENDER_API = "https://cardiotwin-api-8coi.onrender.com";
+
+function apiUrl(path: string) {
+  const host = window.location.hostname;
+  const local = host === "localhost" || host === "127.0.0.1";
+  return `${local ? "" : RENDER_API}${path}`;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, init);
+  const response = await fetch(apiUrl(path), init);
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(errorMessage(data, response.statusText || "Request failed"));
   return data as T;
@@ -36,7 +44,7 @@ export async function streamConsult(
   onEvent: (event: StreamEvent) => void,
   signal?: AbortSignal,
 ) {
-  const response = await fetch("/api/consult/stream", {
+  const response = await fetch(apiUrl("/api/consult/stream"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
