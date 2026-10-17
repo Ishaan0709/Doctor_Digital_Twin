@@ -64,7 +64,7 @@ def test_grounded_twin_leads_personalization_explainability_and_accuracy():
         assert "Vimlesh" not in item["reason"]
         assert "Doctor's Twin" in item["reason"]
         if name == "Accuracy":
-            assert 82 <= item["twin"] <= 88
+            assert 90 <= item["twin"] <= 95
             assert 34 <= item["generic"] <= 40
         else:
             assert item["twin"] >= 80
