@@ -1,0 +1,1983 @@
+{
+  "holdout_size": 30,
+  "seed": 17,
+  "source": "data/raw/doctor_cases_vimlesh_pandey.csv",
+  "excluded_from_retrieval": true,
+  "holdout_case_ids": [
+    "14",
+    "57",
+    "90",
+    "128",
+    "130",
+    "143",
+    "149",
+    "156",
+    "163",
+    "188",
+    "197",
+    "213",
+    "215",
+    "257",
+    "268",
+    "277",
+    "328",
+    "339",
+    "351",
+    "361",
+    "362",
+    "383",
+    "393",
+    "411",
+    "414",
+    "418",
+    "434",
+    "441",
+    "470",
+    "492"
+  ],
+  "systems": {
+    "generic": "Generic GPT, intake only",
+    "rag": "Generic GPT plus the same retrieved cases the twin saw",
+    "twin": "Doctor's Twin, with those cases and the graph, holdout excluded"
+  },
+  "gold": {
+    "tests": "Test names found in the recorded tests column and the recorded treatment decision.",
+    "risk": "urgent if the decision is an ER referral, investigate if it is CT coronary angiography or a stress test, otherwise routine.",
+    "followup": "immediate for an ER referral, 2 weeks when the decision says so, otherwise unspecified."
+  },
+  "summary": {
+    "generic": {
+      "n": 30,
+      "test_precision": 0.3333,
+      "test_recall": 0.175,
+      "risk_agreement": 0.2333,
+      "followup_agreement": 0.2333
+    },
+    "rag": {
+      "n": 30,
+      "test_precision": 0.2944,
+      "test_recall": 0.2528,
+      "risk_agreement": 0.2333,
+      "followup_agreement": 0.2333
+    },
+    "twin": {
+      "n": 30,
+      "test_precision": 0.284,
+      "test_recall": 0.7806,
+      "risk_agreement": 0.2333,
+      "followup_agreement": 0.2333
+    }
+  },
+  "judge": null,
+  "cases": [
+    {
+      "case_id": "14",
+      "gold": {
+        "tests": [
+          "ct"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Medication optimization"
+      },
+      "retrieved_case_ids": [
+        "272",
+        "376",
+        "7",
+        "279",
+        "491"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.16666666666666666,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "57",
+      "gold": {
+        "tests": [
+          "ecg",
+          "echo",
+          "stress"
+        ],
+        "risk": "investigate",
+        "followup": "unspecified",
+        "treatment_decision": "ECG + stress test"
+      },
+      "retrieved_case_ids": [
+        "431",
+        "7",
+        "35",
+        "36",
+        "253"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "lipid"
+          ],
+          "precision": 0.5,
+          "recall": 0.3333333333333333,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.6,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "90",
+      "gold": {
+        "tests": [
+          "stress"
+        ],
+        "risk": "urgent",
+        "followup": "immediate",
+        "treatment_decision": "Urgent ER referral"
+      },
+      "retrieved_case_ids": [
+        "409",
+        "178",
+        "359",
+        "108",
+        "490"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "128",
+      "gold": {
+        "tests": [
+          "echo",
+          "troponin"
+        ],
+        "risk": "routine",
+        "followup": "2 weeks",
+        "treatment_decision": "Follow-up in 2 weeks"
+      },
+      "retrieved_case_ids": [
+        "282",
+        "272",
+        "399",
+        "297",
+        "64"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg",
+            "lipid"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "130",
+      "gold": {
+        "tests": [
+          "ecg",
+          "holter"
+        ],
+        "risk": "urgent",
+        "followup": "immediate",
+        "treatment_decision": "Urgent ER referral"
+      },
+      "retrieved_case_ids": [
+        "467",
+        "417",
+        "261",
+        "38",
+        "296"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg",
+            "lipid"
+          ],
+          "precision": 0.5,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "holter",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "143",
+      "gold": {
+        "tests": [
+          "ct",
+          "ecg"
+        ],
+        "risk": "investigate",
+        "followup": "unspecified",
+        "treatment_decision": "CT coronary angiography"
+      },
+      "retrieved_case_ids": [
+        "228",
+        "314",
+        "385",
+        "313",
+        "212"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.5,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "149",
+      "gold": {
+        "tests": [
+          "echo",
+          "stress"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Lifestyle counseling"
+      },
+      "retrieved_case_ids": [
+        "274",
+        "140",
+        "228",
+        "52",
+        "114"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "echo"
+          ],
+          "precision": 0.5,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "156",
+      "gold": {
+        "tests": [
+          "ecg",
+          "holter"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Medication optimization"
+      },
+      "retrieved_case_ids": [
+        "358",
+        "154",
+        "153",
+        "337",
+        "203"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.3333333333333333,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.16666666666666666,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "163",
+      "gold": {
+        "tests": [
+          "ct",
+          "echo"
+        ],
+        "risk": "investigate",
+        "followup": "unspecified",
+        "treatment_decision": "CT coronary angiography"
+      },
+      "retrieved_case_ids": [
+        "154",
+        "53",
+        "228",
+        "385",
+        "314"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "188",
+      "gold": {
+        "tests": [
+          "ecg",
+          "echo"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Medication optimization"
+      },
+      "retrieved_case_ids": [
+        "491",
+        "272",
+        "153",
+        "267",
+        "217"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.5,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "197",
+      "gold": {
+        "tests": [
+          "echo",
+          "holter",
+          "lipid"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Echo + lipid panel"
+      },
+      "retrieved_case_ids": [
+        "266",
+        "499",
+        "236",
+        "121",
+        "220"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "holter",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.5,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "213",
+      "gold": {
+        "tests": [
+          "echo",
+          "holter"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Holter monitor"
+      },
+      "retrieved_case_ids": [
+        "276",
+        "437",
+        "155",
+        "183",
+        "280"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "holter",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "215",
+      "gold": {
+        "tests": [
+          "holter",
+          "troponin"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Medication optimization"
+      },
+      "retrieved_case_ids": [
+        "272",
+        "74",
+        "67",
+        "376",
+        "132"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.16666666666666666,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "257",
+      "gold": {
+        "tests": [
+          "ecg",
+          "echo",
+          "stress",
+          "troponin"
+        ],
+        "risk": "investigate",
+        "followup": "unspecified",
+        "treatment_decision": "ECG + stress test"
+      },
+      "retrieved_case_ids": [
+        "203",
+        "154",
+        "337",
+        "153",
+        "464"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "stress"
+          ],
+          "precision": 1.0,
+          "recall": 0.75,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.25,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "268",
+      "gold": {
+        "tests": [
+          "ct",
+          "troponin"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Medication optimization"
+      },
+      "retrieved_case_ids": [
+        "307",
+        "359",
+        "463",
+        "166",
+        "363"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg",
+            "echo"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "stress"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "277",
+      "gold": {
+        "tests": [
+          "holter"
+        ],
+        "risk": "routine",
+        "followup": "2 weeks",
+        "treatment_decision": "Follow-up in 2 weeks"
+      },
+      "retrieved_case_ids": [
+        "121",
+        "236",
+        "165",
+        "221",
+        "131"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "328",
+      "gold": {
+        "tests": [
+          "ct",
+          "ecg",
+          "stress"
+        ],
+        "risk": "investigate",
+        "followup": "unspecified",
+        "treatment_decision": "CT coronary angiography"
+      },
+      "retrieved_case_ids": [
+        "278",
+        "230",
+        "69",
+        "363",
+        "341"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "holter"
+          ],
+          "precision": 0.5,
+          "recall": 0.3333333333333333,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.4,
+          "recall": 0.6666666666666666,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "339",
+      "gold": {
+        "tests": [
+          "ct",
+          "ecg"
+        ],
+        "risk": "investigate",
+        "followup": "unspecified",
+        "treatment_decision": "CT coronary angiography"
+      },
+      "retrieved_case_ids": [
+        "437",
+        "276",
+        "280",
+        "183",
+        "344"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.5,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "holter",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.16666666666666666,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "351",
+      "gold": {
+        "tests": [
+          "ct",
+          "troponin"
+        ],
+        "risk": "urgent",
+        "followup": "immediate",
+        "treatment_decision": "Urgent ER referral"
+      },
+      "retrieved_case_ids": [
+        "241",
+        "33",
+        "71",
+        "407",
+        "85"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "361",
+      "gold": {
+        "tests": [
+          "echo",
+          "lipid"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Echo + lipid panel"
+      },
+      "retrieved_case_ids": [
+        "87",
+        "162",
+        "47",
+        "185",
+        "232"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.4,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "362",
+      "gold": {
+        "tests": [
+          "ct",
+          "troponin"
+        ],
+        "risk": "investigate",
+        "followup": "unspecified",
+        "treatment_decision": "CT coronary angiography"
+      },
+      "retrieved_case_ids": [
+        "425",
+        "275",
+        "151",
+        "472",
+        "135"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg",
+            "lipid"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "383",
+      "gold": {
+        "tests": [
+          "ct",
+          "holter",
+          "troponin"
+        ],
+        "risk": "investigate",
+        "followup": "unspecified",
+        "treatment_decision": "CT coronary angiography"
+      },
+      "retrieved_case_ids": [
+        "278",
+        "451",
+        "334",
+        "363",
+        "365"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "holter"
+          ],
+          "precision": 0.5,
+          "recall": 0.3333333333333333,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2,
+          "recall": 0.3333333333333333,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "2 weeks",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "393",
+      "gold": {
+        "tests": [
+          "holter"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Lifestyle counseling"
+      },
+      "retrieved_case_ids": [
+        "363",
+        "282",
+        "278",
+        "86",
+        "186"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "holter"
+          ],
+          "precision": 0.5,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "holter",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.16666666666666666,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "411",
+      "gold": {
+        "tests": [
+          "echo"
+        ],
+        "risk": "urgent",
+        "followup": "immediate",
+        "treatment_decision": "Urgent ER referral"
+      },
+      "retrieved_case_ids": [
+        "274",
+        "228",
+        "491",
+        "272",
+        "114"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "echo"
+          ],
+          "precision": 0.5,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.16666666666666666,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "414",
+      "gold": {
+        "tests": [
+          "troponin"
+        ],
+        "risk": "urgent",
+        "followup": "immediate",
+        "treatment_decision": "Urgent ER referral"
+      },
+      "retrieved_case_ids": [
+        "278",
+        "363",
+        "325",
+        "372",
+        "355"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "holter"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "holter",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.16666666666666666,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "418",
+      "gold": {
+        "tests": [
+          "echo",
+          "stress"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Lifestyle counseling"
+      },
+      "retrieved_case_ids": [
+        "491",
+        "64",
+        "342",
+        "272",
+        "267"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.5,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.5,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "434",
+      "gold": {
+        "tests": [
+          "ecg",
+          "troponin"
+        ],
+        "risk": "urgent",
+        "followup": "immediate",
+        "treatment_decision": "Urgent ER referral"
+      },
+      "retrieved_case_ids": [
+        "5",
+        "76",
+        "309",
+        "474",
+        "40"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "echo"
+          ],
+          "precision": 0.5,
+          "recall": 0.5,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ct",
+            "ecg",
+            "echo",
+            "holter",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2857142857142857,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "441",
+      "gold": {
+        "tests": [
+          "echo"
+        ],
+        "risk": "urgent",
+        "followup": "immediate",
+        "treatment_decision": "Urgent ER referral"
+      },
+      "retrieved_case_ids": [
+        "229",
+        "159",
+        "369",
+        "420",
+        "293"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.2,
+          "recall": 1.0,
+          "risk": "urgent",
+          "risk_match": true,
+          "followup": "immediate",
+          "followup_match": true,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "470",
+      "gold": {
+        "tests": [
+          "ct",
+          "echo",
+          "lipid",
+          "troponin"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Echo + lipid panel"
+      },
+      "retrieved_case_ids": [
+        "378",
+        "146",
+        "229",
+        "107",
+        "110"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg",
+            "stress"
+          ],
+          "precision": 0.0,
+          "recall": 0.0,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "holter",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.5,
+          "recall": 0.75,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "case_id": "492",
+      "gold": {
+        "tests": [
+          "ecg",
+          "echo",
+          "holter"
+        ],
+        "risk": "routine",
+        "followup": "unspecified",
+        "treatment_decision": "Holter monitor"
+      },
+      "retrieved_case_ids": [
+        "186",
+        "272",
+        "56",
+        "372",
+        "317"
+      ],
+      "leak": [],
+      "systems": {
+        "generic": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "rag": {
+          "predicted_tests": [
+            "ecg"
+          ],
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        },
+        "twin": {
+          "predicted_tests": [
+            "ecg",
+            "echo",
+            "lipid",
+            "stress",
+            "troponin"
+          ],
+          "precision": 0.4,
+          "recall": 0.6666666666666666,
+          "risk": "urgent",
+          "risk_match": false,
+          "followup": "immediate",
+          "followup_match": false,
+          "error": null
+        }
+      }
+    }
+  ]
+}

@@ -41,6 +41,19 @@ summary {
   list-style: none;
 }
 
+summary::before {
+  content: "▸ ";
+  color: #123a6b;
+}
+
+html.dark summary::before {
+  color: #8eb8e8;
+}
+
+details[open] > summary::before {
+  content: "▾ ";
+}
+
 summary::-webkit-details-marker {
   display: none;
 }

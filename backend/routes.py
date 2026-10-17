@@ -28,6 +28,7 @@ from backend.utils import (
     prepare_twin_bundle,
     summarize_patient,
 )
+from config import BASE_DIR
 from twin_engine.compare_engine import generate_comparison_metrics
 from twin_engine.doctor_profile import DOCTOR_PROFILE
 
@@ -176,9 +177,29 @@ def compare(payload: CompareRequest) -> dict:
     try:
         report = generate_comparison_metrics(payload.generic, payload.twin)
         factors = report.pop("factors")
-        return {"metrics": report, "factors": factors}
+        depth = report.pop("depth")
+        note = report.pop("traceability_note", "")
+        return {"metrics": report, "factors": factors, "depth": depth, "traceability_note": note}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Comparison failed: {exc}") from exc
+
+
+@router.get("/api/eval/results")
+def eval_results() -> dict:
+    path = BASE_DIR / "eval" / "results.json"
+    if not path.is_file():
+        return {"available": False, "holdout_size": 30, "summary": None}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        "available": True,
+        "holdout_size": data.get("holdout_size", 0),
+        "seed": data.get("seed"),
+        "source": data.get("source", ""),
+        "summary": data.get("summary"),
+        "gold": data.get("gold"),
+        "judge": data.get("judge"),
+        "systems": data.get("systems"),
+    }
 
 
 @router.post("/api/consult/stream")

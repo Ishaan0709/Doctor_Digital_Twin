@@ -68,7 +68,15 @@ def _ensure_locked() -> None:
         _STATE["index"] = _memory_index(local)
 
 
-def retrieve_similar_cases(patient_context: str, top_k: int = 5):
+def _without_excluded(hits, exclude_ids, top_k: int):
+    if not exclude_ids:
+        return hits[:top_k]
+    blocked = {str(item) for item in exclude_ids}
+    kept = [hit for hit in hits if str(hit.get("case_id", "")) not in blocked]
+    return kept[:top_k]
+
+
+def retrieve_similar_cases(patient_context: str, top_k: int = 5, exclude_ids=None):
     with _LOCK:
         _ensure_locked()
         embedder = _STATE["embedder"]
@@ -84,4 +92,7 @@ def retrieve_similar_cases(patient_context: str, top_k: int = 5):
             index_obj = _STATE["index"]
         qvec = embedder.embed_query(patient_context)
 
-    return search_index(index_obj, qvec, top_k=top_k)
+    # A normal consultation asks for top_k only. A held-out run asks for a wider
+    # pool so the excluded cases can be dropped and the next cases still fill top_k.
+    pool = top_k if not exclude_ids else top_k + len({str(item) for item in exclude_ids}) + 5
+    return _without_excluded(search_index(index_obj, qvec, top_k=pool), exclude_ids, top_k)
