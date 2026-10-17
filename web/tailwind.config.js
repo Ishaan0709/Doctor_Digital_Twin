@@ -5,7 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Segoe UI", "Helvetica Neue", "sans-serif"],
+        sans: ["Source Sans 3", "Segoe UI", "sans-serif"],
+        display: ["Source Sans 3", "Segoe UI", "sans-serif"],
       },
       boxShadow: {
         card: "0 18px 40px rgba(2, 6, 23, 0.12)",

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { streamConsult } from "../lib/api";
 import { useAppStore } from "../store/useAppStore";
 import type { TwinResult } from "../types";
+import { RichText } from "../components/RichText";
 import { Button, Card, Note, PageHeader, Skeleton } from "../components/ui";
 
 export default function Comparison() {
@@ -41,12 +42,12 @@ export default function Comparison() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <h2 className="text-xl font-semibold">Generic GPT</h2>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-7">{generic.consultation_summary}</p>
+          <RichText text={generic.consultation_summary} />
           <ul className="mt-4 list-disc space-y-1 pl-5 text-sm"><li>Uses only direct patient text.</li><li>Does not reference specialist case memory.</li><li>Does not apply graph relationship reasoning.</li></ul>
         </Card>
         <Card>
           <h2 className="text-xl font-semibold">Dr. Pandey AI Twin</h2>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-7">{twin.assessment}</p>
+          <RichText text={twin.assessment} />
           <ul className="mt-4 list-disc space-y-1 pl-5 text-sm"><li>Uses patient-first specialist framing.</li><li>Adds retrieved historical case patterns.</li><li>Adds GraphRAG links for risk and decision context.</li></ul>
         </Card>
       </div>

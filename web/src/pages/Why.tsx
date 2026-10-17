@@ -17,7 +17,6 @@ export default function Why() {
             {twin.historical_patterns?.map((item) => <li key={String(item.case_id)}>Case {item.case_id}: {item.diagnosis} → {item.outcome}</li>)}
           </ul>
         </Card>
-        <Card><h2 className="font-semibold">Patient-specific factors</h2><div className="mt-3"><BulletList items={twin.unique_factors} /></div></Card>
         <Card>
           <h2 className="font-semibold">Differences from matched cases</h2>
           <BulletList items={["Current symptoms and risk markers are prioritized over historical templates.", "Medication context and present labs reshape urgency and testing pathways."]} />

@@ -83,7 +83,7 @@ export default function Admin() {
           </Card>
         </>
       )}
-      <Card><p className="text-sm text-emerald-700 dark:text-emerald-200">CardioTwin AI dataset pipeline is active and ready for expansion.</p></Card>
+      <Card><p className="text-sm text-[#123a6b] dark:text-[#d6e7fb]">CardioTwin AI dataset pipeline is active and ready for expansion.</p></Card>
       <Card>
         <h2 className="mb-3 font-semibold">Dataset registry</h2>
         <div className="space-y-3">

@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { InlineText } from "./RichText";
 import { cn } from "../lib/utils";
 import type { Source, TwinResult } from "../types";
 
@@ -11,8 +12,8 @@ export function Button({
     <button
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50",
-        variant === "primary" && "bg-gradient-to-br from-sky-500 to-teal-500 text-slate-950 shadow-lg shadow-sky-500/20 hover:brightness-105",
-        variant === "ghost" && "border border-slate-300/80 bg-white/70 text-slate-800 hover:border-sky-400 dark:border-white/15 dark:bg-white/5 dark:text-slate-100",
+        variant === "primary" && "bg-[#123a6b] text-white hover:bg-[#0c2d56]",
+        variant === "ghost" && "border border-[#c5d7ea] bg-white text-[#1a1a1a] hover:border-[#123a6b] dark:border-white/10 dark:bg-[#102038] dark:text-[#f4f7fb]",
         variant === "danger" && "border border-amber-400/40 bg-amber-500/10 text-amber-800 dark:text-amber-200",
         className,
       )}
@@ -23,7 +24,7 @@ export function Button({
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <section className={cn("rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-card backdrop-blur dark:border-white/10 dark:bg-white/[0.06]", className)}>
+    <section className={cn("rounded-2xl border border-[#c9daee] bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#102038]", className)}>
       {children}
     </section>
   );
@@ -32,10 +33,19 @@ export function Card({ children, className }: { children: ReactNode; className?:
 export function PageHeader({ eyebrow, title, caption }: { eyebrow?: string; title: string; caption?: string }) {
   return (
     <header className="mb-5">
-      {eyebrow && <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-600 dark:text-sky-300">{eyebrow}</p>}
-      <h1 className="mt-1 text-3xl font-semibold tracking-tight">{title}</h1>
+      {eyebrow && <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#123a6b] dark:text-[#8eb8e8]">{eyebrow}</p>}
+      <h1 className="mt-1 text-4xl font-semibold tracking-tight text-[#0b1f3a] dark:text-white">{title}</h1>
       {caption && <p className="mt-2 max-w-3xl text-sm text-slate-600 dark:text-slate-300">{caption}</p>}
     </header>
+  );
+}
+
+export function Fold({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <details className="rounded-2xl border border-[#c9daee] bg-white dark:border-white/10 dark:bg-[#102038]">
+      <summary className="cursor-pointer list-none px-5 py-4 font-semibold text-[#0b1f3a] dark:text-white">{title}</summary>
+      <div className="px-5 pb-5">{children}</div>
+    </details>
   );
 }
 
@@ -67,7 +77,7 @@ export function BulletList({ items }: { items?: string[] }) {
       {items.map((item) => (
         <li key={item} className="flex gap-2">
           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500" />
-          <span>{item}</span>
+          <span><InlineText text={item} /></span>
         </li>
       ))}
     </ul>
@@ -102,7 +112,7 @@ export function Confidence({ result }: { result: Pick<TwinResult, "confidence_sc
       <p className="text-xs font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-200">Confidence</p>
       <p className="mt-1 text-3xl font-semibold">{pct}%</p>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
-        <div className="h-full rounded-full bg-gradient-to-r from-sky-500 to-teal-400" style={{ width: `${pct}%` }} />
+        <div className="h-full rounded-full bg-[#123a6b]" style={{ width: `${pct}%` }} />
       </div>
       <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">{help}</p>
     </div>
@@ -110,4 +120,4 @@ export function Confidence({ result }: { result: Pick<TwinResult, "confidence_sc
 }
 
 export const fieldClass =
-  "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-sky-400/30 transition focus:ring-2 dark:border-white/15 dark:bg-white/5";
+  "w-full rounded-xl border border-[#c5d7ea] bg-white px-3 py-2 text-sm text-[#0b1f3a] outline-none ring-[#123a6b]/25 transition placeholder:text-[#5c7190] focus:ring-2 dark:border-white/15 dark:bg-[#071422] dark:text-[#e7f0fa] dark:placeholder:text-[#9eb0c8]";

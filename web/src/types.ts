@@ -79,7 +79,7 @@ export interface ChatMessage {
   sources?: Source[];
 }
 
-export type DoctorStatus = "approved" | "edited_approved" | "rejected" | null;
+export type DoctorStatus = "approved" | "edited_approved" | "rejected" | "in_person" | null;
 
 export const demoPatient: Patient = {
   name: "Aarav Mehta",

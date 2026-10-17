@@ -174,7 +174,9 @@ def followup(payload: FollowupRequest):
 @router.post("/api/compare")
 def compare(payload: CompareRequest) -> dict:
     try:
-        return {"metrics": generate_comparison_metrics(payload.generic, payload.twin)}
+        report = generate_comparison_metrics(payload.generic, payload.twin)
+        factors = report.pop("factors")
+        return {"metrics": report, "factors": factors}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Comparison failed: {exc}") from exc
 

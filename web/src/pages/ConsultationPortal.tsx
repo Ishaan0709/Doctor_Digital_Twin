@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Copy, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { PatientForm } from "../components/PatientForm";
-import { BulletList, Button, Card, Disclaimer, Note, PageHeader } from "../components/ui";
+import { RichText } from "../components/RichText";
+import { BulletList, Button, Card, Disclaimer, Fold, PageHeader } from "../components/ui";
 import { streamConsult } from "../lib/api";
 import { bmiOf } from "../lib/utils";
 import { useAppStore } from "../store/useAppStore";
 import { demoPatient, type ChatMessage, type GenericResult, type TwinResult } from "../types";
 
 export default function ConsultationPortal() {
+  const navigate = useNavigate();
   const portal = useAppStore((s) => s.portal);
   const saveIntake = useAppStore((s) => s.savePortalIntake);
   const patch = useAppStore((s) => s.patchPortal);
@@ -19,6 +22,7 @@ export default function ConsultationPortal() {
   const [draftText, setDraftText] = useState("");
   const [edited, setEdited] = useState(portal.draft || "");
   const [question, setQuestion] = useState("");
+  const [comeInNote, setComeInNote] = useState("");
 
   async function begin(mode: "general" | "specialist") {
     if (!portal.patient) return;
@@ -109,40 +113,28 @@ export default function ConsultationPortal() {
     ask(lastUser.content, history);
   }
 
+  useEffect(() => {
+    if (portal.view === "Doctor") setEdited(portal.draft || "");
+  }, [portal.view, portal.draft]);
+
   const status = portal.doctorStatus;
   return (
     <div>
-      <PageHeader eyebrow="Portal" title="Consultation Portal" caption="One-on-one consultation with guided intake, live chat, and a clinician review step." />
-      <Note title="How this works">Fill the guided intake, choose General AI or the Specialist Twin, then continue in chat. A clinician can accept, reject, or edit the draft before it is shared back.</Note>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        {portal.mode === "specialist" ? (
-          <div className="flex rounded-full border border-slate-300 p-1 text-sm dark:border-white/15">
-            {(["Patient", "Doctor"] as const).map((view) => (
-              <button key={view} className={`rounded-full px-3 py-1 ${portal.view === view ? "bg-sky-500 text-slate-950" : ""}`} onClick={() => { setEdited(portal.draft || ""); patch({ view }); }}>{view}</button>
-            ))}
-          </div>
-        ) : <span className="rounded-full border border-slate-300 px-3 py-1 text-sm dark:border-white/15">Patient view</span>}
-        <p className="text-sm text-slate-500">Intake → consultation → chat → doctor review</p>
-      </div>
-
+      <PageHeader eyebrow="Consultation" title={portal.patient ? portal.patient.name : "Your consultation"} caption="The Doctor's Twin answers from the details you just gave. Open a section only if you want it." />
       {portal.view === "Doctor" ? (
         <Card>
-          <h2 className="text-xl font-semibold">Clinician review</h2>
-          {portal.mode !== "specialist" ? (
-            <div className="mt-3">
-              <p>Doctor review is available only for the Dr. Vimlesh Pandey Specialist Twin.</p>
-              <Button className="mt-3" variant="primary" onClick={() => patch({ view: "Patient" })}>Back to patient chat</Button>
-            </div>
-          ) : !portal.patient || !portal.draft ? (
-            <p className="mt-3">Start a specialist consultation first.</p>
+          <h2 className="text-xl font-semibold">Doctor's view</h2>
+          <p className="mt-1 text-sm text-[#3d5270] dark:text-[#c9d7ea]">The consultation is shown as the patient sees it. Edit the draft underneath if you want to change it.</p>
+          {!portal.patient || !portal.draft ? (
+            <p className="mt-4 text-sm">Start the consultation from the patient view first.</p>
           ) : (
             <div className="mt-4 space-y-4">
-              <div className="rounded-xl bg-slate-100 p-3 text-sm dark:bg-white/5">
-                <p><strong>{portal.patient.name}</strong> · age {portal.patient.age} · BMI {bmiOf(portal.patient)}</p>
-                <p>BP {portal.patient.bp} · LDL {portal.patient.ldl} · HbA1c {portal.patient.hba1c}</p>
+              <p className="text-sm">{portal.patient.name} · age {portal.patient.age} · BMI {bmiOf(portal.patient)} · LDL {portal.patient.ldl}</p>
+              <div className="rounded-2xl bg-[#f3f7fc] p-4 dark:bg-[#071422]">
+                <RichText text={edited || portal.draft} />
               </div>
-              <label className="block text-sm">Clinician-edited consultation draft
-                <textarea className="mt-1 min-h-64 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm dark:border-white/15 dark:bg-white/5" value={edited} onChange={(e) => setEdited(e.target.value)} />
+              <label className="block text-sm">Change the consultation
+                <textarea className="mt-1 min-h-48 w-full rounded-xl border border-[#c5d7ea] bg-white p-3 text-sm text-[#0b1f3a] dark:border-white/10 dark:bg-[#071422] dark:text-[#e7f0fa]" value={edited} onChange={(e) => setEdited(e.target.value)} />
               </label>
               <div className="flex flex-wrap gap-3">
                 <Button variant="primary" onClick={() => {
@@ -156,81 +148,92 @@ export default function ConsultationPortal() {
                   patch({ rejected: true, approved: null, doctorStatus: "rejected", chat: [...portal.chat, { role: "assistant", content: "Doctor update: Rejected. Please schedule a direct clinical review." }], view: "Patient" });
                   toast.success("Draft rejected.");
                 }}>Reject</Button>
-                <Button onClick={() => patch({ view: "Patient" })}>Back to patient chat</Button>
+                <Button onClick={() => {
+                  const reason = comeInNote.trim();
+                  const content = reason
+                    ? `Please come in person. Dr. Pandey wants to see you at the clinic. ${reason}`
+                    : "Please come in person. Dr. Pandey wants to see you at the clinic. This is something the twin should not explain on its own.";
+                  patch({ doctorStatus: "in_person", chat: [...portal.chat, { role: "assistant", content }], view: "Patient" });
+                  toast.success("The patient has been asked to come in.");
+                }}>Ask them to come in</Button>
               </div>
-              <Disclaimer text="This panel is a demo clinician workflow. A real deployment needs access control, audit logs, and role-based approval." />
+              <label className="block text-sm text-[#0b1f3a] dark:text-[#e7f0fa]">If this should be said in person
+                <textarea className="mt-1 min-h-24 w-full rounded-xl border border-[#c5d7ea] bg-white p-3 text-sm text-[#0b1f3a] placeholder:text-[#5c7190] dark:border-white/10 dark:bg-[#071422] dark:text-[#e7f0fa] dark:placeholder:text-[#9eb0c8]" placeholder="For example: this looks serious, and the twin should not be the one to explain it." value={comeInNote} onChange={(e) => setComeInNote(e.target.value)} />
+              </label>
+              <p className="text-sm text-[#3d5270] dark:text-[#c9d7ea]">Use this when the case is serious and the twin cannot say it properly. The patient is asked to see Dr. Pandey in person.</p>
+              <Disclaimer text="This review is a demo. A real clinic needs access control and an audit log." />
             </div>
           )}
         </Card>
-      ) : (
-        <div className="space-y-4">
-          <Card>
-            <h2 className="text-xl font-semibold">Guided patient intake</h2>
-            <div className="mt-4">
-              <PatientForm initial={portal.patient || demoPatient} mode="portal" submitLabel="Save Intake" onSubmit={(patient) => { saveIntake(patient); toast.success("Intake saved. Choose a consultation type to begin."); }} />
-            </div>
-          </Card>
-          <Card>
-            <h2 className="text-xl font-semibold">Choose consultation type</h2>
-            {!portal.patient && <p className="mt-3 text-sm">Save the intake first to start a consultation.</p>}
-            {portal.patient && portal.chat.length > 0 && <p className="mt-3 text-sm">Active consultation: {portal.mode === "specialist" ? "Dr. Vimlesh Pandey Specialist Twin" : "General AI"}</p>}
-            {portal.patient && portal.chat.length === 0 && (
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-slate-200 p-4 dark:border-white/10">
-                  <h3 className="font-semibold">General AI consultation</h3>
-                  <p className="mt-1 text-sm text-slate-500">Broad guidance from the intake only. A baseline, without specialist case memory.</p>
-                  <Button className="mt-3" variant="primary" disabled={busy} onClick={() => begin("general")}>Start General Consultation</Button>
-                </div>
-                <div className="rounded-2xl border border-slate-200 p-4 dark:border-white/10">
-                  <h3 className="font-semibold">Dr. Vimlesh Pandey Specialist Twin</h3>
-                  <p className="mt-1 text-sm text-slate-500">Specialist reasoning with historical cases and graph relationships.</p>
-                  <Button className="mt-3" variant="primary" disabled={busy} onClick={() => begin("specialist")}>Start Specialist Consultation</Button>
-                </div>
+      ) : !portal.patient && (
+        <Card>
+          <h2 className="font-display text-2xl">Your details</h2>
+          <div className="mt-4">
+            <PatientForm initial={demoPatient} mode="portal" submitLabel="Continue" onSubmit={(patient) => { saveIntake(patient); toast.success("Details saved."); }} />
+          </div>
+        </Card>
+      )}
+      {portal.view !== "Doctor" && portal.patient && portal.chat.length === 0 && !draftText && (
+        <Card>
+          <p className="text-sm text-[#5c6b7a] dark:text-[#b7c0c7]">Age {portal.patient.age} · BP {portal.patient.bp || "not given"} · LDL {portal.patient.ldl}</p>
+          <Button className="mt-5" variant="primary" disabled={busy} onClick={() => begin("specialist")}>{busy ? "Writing…" : "Start the consultation"}</Button>
+        </Card>
+      )}
+      {portal.view !== "Doctor" && (portal.chat.length > 0 || draftText) && (
+        <Card>
+          {status === "approved" && <p className="mb-3 rounded-xl bg-[#e7f1fb] px-4 py-3 text-sm text-[#0b1f3a] dark:bg-[#16345c] dark:text-white">A clinician approved this consultation.</p>}
+          {status === "edited_approved" && <p className="mb-3 rounded-xl bg-[#e7f1fb] px-4 py-3 text-sm text-[#0b1f3a] dark:bg-[#16345c] dark:text-white">A clinician edited and approved this consultation.</p>}
+          {status === "rejected" && <p className="mb-3 rounded-xl bg-amber-100 px-4 py-3 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-50">A clinician rejected this draft. Please arrange a direct review.</p>}
+          {status === "in_person" && <p className="mb-3 rounded-xl bg-[#e7f1fb] px-4 py-3 text-sm font-semibold text-[#0b1f3a] dark:bg-[#16345c] dark:text-white">Dr. Pandey wants to see you in person. This is something the twin should not explain on its own. Please come to the clinic.</p>}
+          <div className="max-h-[540px] space-y-3 overflow-y-auto pr-1">
+            {portal.chat.map((message, index) => (
+              <div key={`${message.role}-${index}`} className={`w-fit max-w-[75%] rounded-2xl px-3 py-2 text-sm leading-6 ${message.role === "user" ? "ml-auto bg-[#123a6b] text-white" : "bg-[#f3f7fc] dark:bg-[#071422]"}`}>
+                {message.role === "assistant" ? <RichText text={message.content} className="" /> : <p className="whitespace-pre-wrap">{message.content}</p>}
+                {message.role === "assistant" && (
+                  <div className="mt-2 flex gap-2">
+                    <button aria-label="Copy message" onClick={() => copy(message.content)}><Copy size={14} /></button>
+                    <button aria-label="Regenerate message" onClick={() => regenerate(index)}><RefreshCw size={14} /></button>
+                  </div>
+                )}
               </div>
-            )}
-          </Card>
-          <Card>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-xl font-semibold">Consultation chat</h2>
-              {portal.chat.length > 0 && (
-                <div className="flex gap-2">
-                  <Button disabled={portal.mode !== "specialist"} onClick={() => { setEdited(portal.draft || ""); patch({ view: "Doctor" }); }}>Open Doctor Review</Button>
-                  <Button onClick={() => { reset(); setDraftText(""); toast.success("Reset done."); }}>Reset consultation</Button>
+            ))}
+            {draftText && <div className="w-fit max-w-[75%] rounded-2xl bg-[#f3f7fc] px-3 py-2 text-sm leading-6 dark:bg-[#071422]"><RichText text={draftText} streaming className="" /></div>}
+          </div>
+          <form className="mt-4 flex items-center gap-2" onSubmit={(event) => { event.preventDefault(); if (!question.trim() || busy) return; const text = question.trim(); setQuestion(""); ask(text, portal.chat); }}>
+            <input className="h-10 min-w-0 flex-1 rounded-full border border-[#c5d7ea] bg-white px-4 text-sm text-[#0b1f3a] placeholder:text-[#5c7190] dark:border-white/10 dark:bg-[#071422] dark:text-[#e7f0fa] dark:placeholder:text-[#9eb0c8]" placeholder="Ask a follow-up" value={question} onChange={(e) => setQuestion(e.target.value)} />
+            <Button className="h-10 shrink-0 rounded-full px-4" variant="primary" disabled={busy}>{busy ? "…" : "Send"}</Button>
+          </form>
+        </Card>
+      )}
+      {portal.view !== "Doctor" && portal.patient && (
+        <div className="mt-4 space-y-3">
+          <Fold title="Change these details">
+            <PatientForm initial={portal.patient} mode="portal" submitLabel="Save" onSubmit={(patient) => { saveIntake(patient); toast.success("Details saved."); }} />
+          </Fold>
+          {portal.twin && (
+            <>
+              <Fold title="Tests, actions, and follow-up">
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div><h3 className="font-semibold">Tests</h3><BulletList items={portal.twin.recommended_tests} /></div>
+                  <div><h3 className="font-semibold">Actions</h3><BulletList items={portal.twin.immediate_actions} /></div>
+                  <div><h3 className="font-semibold">Follow-up</h3><BulletList items={portal.twin.follow_up_plan} /></div>
                 </div>
-              )}
-            </div>
-            {status === "approved" && <p className="mt-3 rounded-xl bg-emerald-500/10 px-3 py-2 text-sm text-emerald-800 dark:text-emerald-100">Doctor has reviewed and approved the consultation.</p>}
-            {status === "edited_approved" && <p className="mt-3 rounded-xl bg-emerald-500/10 px-3 py-2 text-sm text-emerald-800 dark:text-emerald-100">Doctor has edited and approved the consultation.</p>}
-            {status === "rejected" && <p className="mt-3 rounded-xl bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">Doctor has rejected this draft. Please schedule a direct clinical review.</p>}
-            {portal.chat.length === 0 && !draftText && <p className="mt-3 text-sm text-slate-500">Start a consultation to enable chat.</p>}
-            <div className="mt-4 max-h-[540px] space-y-3 overflow-y-auto pr-1">
-              {portal.chat.map((message, index) => (
-                <div key={`${message.role}-${index}`} className={`max-w-[92%] rounded-2xl px-4 py-3 text-sm leading-6 ${message.role === "user" ? "ml-auto bg-sky-500 text-slate-950" : "bg-slate-100 dark:bg-white/5"}`}>
-                  <p className="whitespace-pre-wrap">{message.content}</p>
-                  {message.role === "assistant" && (
-                    <div className="mt-2 flex gap-2">
-                      <button aria-label="Copy message" onClick={() => copy(message.content)}><Copy size={14} /></button>
-                      <button aria-label="Regenerate message" onClick={() => regenerate(index)}><RefreshCw size={14} /></button>
-                    </div>
-                  )}
+              </Fold>
+              <Fold title="Why this reading">
+                <p className="text-sm leading-6 text-[#0b1f3a] dark:text-[#e7f0fa]">This follows visits Dr. Pandey has already seen. They are similar histories, not a copy of this patient, and they are why the reading takes this direction.</p>
+                <ul className="mt-3 space-y-2 text-sm text-[#0b1f3a] dark:text-[#e7f0fa]">
+                  {(portal.twin.historical_patterns || []).map((item) => (
+                    <li key={String(item.case_id)}>Case {item.case_id}: {item.diagnosis}</li>
+                  ))}
+                </ul>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button variant="primary" onClick={() => navigate("/graph?scope=patient&from=consultation")}>This patient's graph</Button>
+                  <Button onClick={() => navigate("/graph?scope=all&from=consultation")}>Entire graph</Button>
                 </div>
-              ))}
-              {draftText && <div className="max-w-[92%] rounded-2xl bg-slate-100 px-4 py-3 text-sm leading-6 dark:bg-white/5"><p className="whitespace-pre-wrap">{draftText}<span className="ml-1 inline-block h-3 w-1 animate-pulse bg-sky-500" /></p></div>}
-            </div>
-            {portal.mode === "specialist" && portal.twin && (
-              <div className="mt-4 grid gap-3 md:grid-cols-3">
-                <Card><h3 className="font-semibold">Immediate actions</h3><BulletList items={portal.twin.immediate_actions} /></Card>
-                <Card><h3 className="font-semibold">Recommended tests</h3><BulletList items={portal.twin.recommended_tests} /></Card>
-                <Card><h3 className="font-semibold">Follow-up plan</h3><BulletList items={portal.twin.follow_up_plan} /></Card>
-              </div>
-            )}
-            {portal.chat.length > 0 && (
-              <form className="mt-4 flex gap-2" onSubmit={(event) => { event.preventDefault(); if (!question.trim() || busy) return; const text = question.trim(); setQuestion(""); ask(text, portal.chat); }}>
-                <input className="flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5" placeholder="Ask a follow-up question" value={question} onChange={(e) => setQuestion(e.target.value)} />
-                <Button variant="primary" disabled={busy}>{busy ? "Thinking…" : "Send"}</Button>
-              </form>
-            )}
-          </Card>
+              </Fold>
+            </>
+          )}
+          <button className="text-sm text-[#123a6b] underline dark:text-[#8eb8e8]" onClick={() => { reset(); setDraftText(""); toast.success("Consultation cleared."); }}>Start again</button>
         </div>
       )}
     </div>

@@ -46,7 +46,7 @@ const emptyPortal: PortalState = {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      theme: "dark",
+      theme: "light",
       patient: null,
       genericResult: null,
       twinResult: null,
@@ -79,6 +79,10 @@ export const useAppStore = create<AppState>()(
           },
         })),
     }),
-    { name: "cardiotwin-session", version: 1 },
+    {
+      name: "cardiotwin-session",
+      version: 2,
+      migrate: (persisted) => ({ ...(persisted as object), theme: "light" }),
+    },
   ),
 );

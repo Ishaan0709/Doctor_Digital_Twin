@@ -14,6 +14,7 @@ import Insights from "./pages/Insights";
 import Why from "./pages/Why";
 import Explain from "./pages/Explain";
 import Admin from "./pages/Admin";
+import Studio from "./pages/Studio";
 import { Card } from "./components/ui";
 
 function Missing() {
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="/why" element={<Why />} />
             <Route path="/explain" element={<Explain />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/studio" element={<Studio />} />
             <Route path="*" element={<Missing />} />
           </Routes>
         </motion.div>
