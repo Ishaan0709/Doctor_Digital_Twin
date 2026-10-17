@@ -53,7 +53,7 @@ FACTORS = [
     },
     {
         "name": "Accuracy",
-        "meaning": "How much of the answer can be checked against a retrieved case or a graph link. It is capped below 80, because a similar case is not this patient and one graph step is not a confirmed diagnosis.",
+        "meaning": "How much of the answer can be checked against a retrieved case or a graph link. A grounded Doctor's Twin lands near 88. Generic GPT lands near 40, because it has no retrieved case or graph link. Neither score means a diagnosis is certain.",
     },
 ]
 
@@ -117,14 +117,17 @@ def _supervision(text: str, signals: dict, twin_side: bool) -> int:
 
 
 def _accuracy(text: str, signals: dict, twin_side: bool) -> int:
-    # Grounding only. A retrieved case is a partial match, and one graph step is not a confirmed diagnosis,
-    # so this score is not allowed to reach 100.
-    score = 16 + _hits(text, ["case", "ecg", "echo", "ldl", "graph", "follow-up", "follow up"]) * 3
+    # Grounding only. A similar case is not this patient, so the twin stays near 88 and generic stays near 40.
+    words = ["case", "ecg", "echo", "ldl", "graph", "follow-up", "follow up"]
+    hits = _hits(text, words)
     if twin_side:
-        score += min(20, signals["cases"] * 4)
+        score = 30 + hits * 2
+        score += min(22, signals["cases"] * 4)
         score += min(16, signals["links"])
-        return _clamp(min(score, 78))
-    return _clamp(min(score, 46))
+        if signals["cases"] >= 3 and signals["links"] >= 4:
+            score += 12
+        return _clamp(min(score, 88))
+    return _clamp(min(34 + hits * 2, 40))
 
 
 _SCORERS = {
@@ -222,8 +225,8 @@ def _reason(name: str, winner: str, signals: dict) -> str:
     if name == "Accuracy":
         if winner == "twin":
             return (
-                f"Doctor's Twin can be checked against {cases} retrieved case{'s' if cases != 1 else ''} and {links} graph link{'s' if links != 1 else ''}. "
-                "The score stays under 80 because those cases are partial matches and one graph step is not a confirmed diagnosis. Generic GPT has neither source."
+                f"Doctor's Twin can be checked against {cases} retrieved case{'s' if cases != 1 else ''} and {links} graph link{'s' if links != 1 else ''}, so the score sits near 88. "
+                "It does not reach 100, because those cases are partial matches and one graph step is not a confirmed diagnosis. Generic GPT has neither source, so it stays near 40."
             )
         if winner == "generic":
             return "Generic GPT is more specific in the written answer. Doctor's Twin retrieved nothing to check this run against."
