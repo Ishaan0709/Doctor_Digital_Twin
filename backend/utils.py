@@ -203,14 +203,14 @@ def _twin_plan_lists() -> Dict[str, List[str]]:
     }
 
 
-def prepare_twin_bundle(patient: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_twin_bundle(patient: Dict[str, Any], exclude_ids=None) -> Dict[str, Any]:
     patient_text = patient_to_text(patient)
     profile = profile_context(patient.get("profile_id"))
     if profile:
         patient_text += "\n\n" + profile
     timeline = timeline_context(patient.get("profile_id"))
     questions = clarifying_questions(patient)
-    retrieved = rerank_cases(retrieve_similar_cases(patient_text, top_k=5), patient_text)
+    retrieved = rerank_cases(retrieve_similar_cases(patient_text, top_k=5, exclude_ids=exclude_ids), patient_text)
     graph = get_cached_graph()
     graph_result = graph_reasoning(patient_text, graph)
     uniqueness_flags = extract_uniqueness_flags(patient)
@@ -251,8 +251,8 @@ def prepare_twin_bundle(patient: Dict[str, Any]) -> Dict[str, Any]:
     return payload
 
 
-def generate_twin_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
-    bundle = prepare_twin_bundle(patient)
+def generate_twin_consultation(patient: Dict[str, Any], exclude_ids=None) -> Dict[str, Any]:
+    bundle = prepare_twin_bundle(patient, exclude_ids=exclude_ids)
     bundle["assessment"] = _safe_openai_chat(bundle["system_prompt"], bundle["user_prompt"])
     return bundle
 

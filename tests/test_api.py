@@ -45,6 +45,12 @@ def client(monkeypatch):
         yield test_client
 
 
+def test_eval_results_shape(client):
+    body = client.get("/api/eval/results").json()
+    assert body["holdout_size"] == 30 or body.get("available") is True
+    assert "summary" in body
+
+
 def test_health(client):
     response = client.get("/health")
     assert response.status_code == 200
