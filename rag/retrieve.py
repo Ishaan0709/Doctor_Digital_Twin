@@ -53,11 +53,19 @@ def _ensure_locked() -> None:
         _STATE["index"] = _memory_index(local)
         return
 
-    initialize_rag(embedder)
-    if not embedder.use_openai:
-        df = ingest_cases()
-        embedder.embed_texts(df["rag_text"].tolist())
-    _STATE["index"] = load_index()
+    try:
+        initialize_rag(embedder)
+        if not embedder.use_openai:
+            df = ingest_cases()
+            embedder.embed_texts(df["rag_text"].tolist())
+        loaded = load_index()
+        if loaded.get("index") is None:
+            raise RuntimeError("search index was not stored")
+        _STATE["index"] = loaded
+    except Exception:
+        local = Embedder(force_local=True)
+        _STATE["embedder"] = local
+        _STATE["index"] = _memory_index(local)
 
 
 def retrieve_similar_cases(patient_context: str, top_k: int = 5):
