@@ -28,6 +28,7 @@ from backend.utils import (
     prepare_twin_bundle,
     summarize_patient,
 )
+from backend.llm import active_model, resolve_provider
 from config import BASE_DIR
 from twin_engine.compare_engine import generate_comparison_metrics
 from twin_engine.doctor_profile import DOCTOR_PROFILE
@@ -57,7 +58,12 @@ def _public_bundle(bundle: Dict[str, Any]) -> Dict[str, Any]:
 
 @router.get("/health")
 def health() -> dict:
-    return {"status": "ok", "service": "CardioTwin AI"}
+    try:
+        provider = resolve_provider()
+        model = active_model(provider)
+    except Exception:
+        provider, model = "unconfigured", ""
+    return {"status": "ok", "service": "CardioTwin AI", "llm_provider": provider, "llm_model": model}
 
 
 @router.get("/api/health")
@@ -214,7 +220,7 @@ def consult_stream(payload: StreamRequest):
                 bundle = prepare_generic_bundle(patient)
                 yield _sse({"type": "meta", "result": _public_bundle(bundle)})
                 parts: list[str] = []
-                for token in iter_openai_chat(bundle["system_prompt"], bundle["user_prompt"]):
+                for token in iter_openai_chat(bundle["system_prompt"], bundle["user_prompt"], provider=payload.provider):
                     parts.append(token)
                     yield _sse({"type": "token", "text": token})
                 yield _sse({"type": "done", "text": "".join(parts), "field": "consultation_summary"})
@@ -224,7 +230,7 @@ def consult_stream(payload: StreamRequest):
                 bundle = prepare_twin_bundle(patient)
                 yield _sse({"type": "meta", "result": _public_bundle(bundle)})
                 parts = []
-                for token in iter_openai_chat(bundle["system_prompt"], bundle["user_prompt"]):
+                for token in iter_openai_chat(bundle["system_prompt"], bundle["user_prompt"], provider=payload.provider):
                     parts.append(token)
                     yield _sse({"type": "token", "text": token})
                 yield _sse({"type": "done", "text": "".join(parts), "field": "assessment"})
@@ -275,7 +281,7 @@ def consult_stream(payload: StreamRequest):
                     sources = [{"type": "patient", "text": "General consultation uses the current intake only."}]
                 yield _sse({"type": "meta", "sources": sources, "disclaimer": DISCLAIMER, "clarifying_questions": questions})
                 parts = []
-                for token in iter_openai_chat(system, user):
+                for token in iter_openai_chat(system, user, provider=payload.provider):
                     parts.append(token)
                     yield _sse({"type": "token", "text": token})
                 yield _sse({"type": "done", "text": "".join(parts), "field": "reply"})

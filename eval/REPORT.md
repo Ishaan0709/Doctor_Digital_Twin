@@ -74,3 +74,16 @@ Doctor's Twin predicted risk: urgent 30. Predicted follow-up: immediate 29, 2 we
 The blinded judge was not run. Add `--judge` to score caution, specificity, and traceability with the answer order randomized.
 
 No held-out case id was returned by retrieval.
+
+## SLM and GPT, same 30 cases
+
+Seed 17. Holdout size 30. Temperature for this experiment is 0. Status: not_run.
+
+These four configurations were not executed. No score was invented.
+
+| Configuration | Provider | Model | Grounding | Status |
+| --- | --- | --- | --- | --- |
+| slm_generic | ollama | llama3.2 | intake only | not_run |
+| slm_twin | ollama | llama3.2 | retrieved cases and the graph | not_run |
+| gpt_generic | openai | gpt-4o-mini | intake only | not_run |
+| gpt_twin | openai | gpt-4o-mini | retrieved cases and the graph | not_run |

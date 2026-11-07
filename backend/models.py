@@ -91,6 +91,7 @@ class StreamRequest(BaseModel):
     twin: Optional[Dict[str, Any]] = None
     history: List[ChatTurn] = []
     mode: Literal["general", "specialist"] = "general"
+    provider: Optional[Literal["openai", "ollama"]] = None
 
 
 class CompareRequest(BaseModel):

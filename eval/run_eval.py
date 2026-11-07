@@ -550,7 +550,33 @@ def _attach_scores(report: dict, audit: dict) -> dict:
             "Risk level and follow-up interval are not scored. The answers do not state them apart from a fixed safety line."
         ),
     }
+    existing = report.get("four_way") or {}
+    if existing.get("status") != "completed":
+        report["four_way"] = four_way_plan()
     return report
+
+
+def four_way_plan() -> dict:
+    """The four-way experiment. Scores stay empty until a real run fills them."""
+    from config import OLLAMA_MODEL, OPENAI_MODEL
+
+    specs = (
+        ("slm_generic", "ollama", OLLAMA_MODEL, "intake only"),
+        ("slm_twin", "ollama", OLLAMA_MODEL, "retrieved cases and the graph"),
+        ("gpt_generic", "openai", OPENAI_MODEL, "intake only"),
+        ("gpt_twin", "openai", OPENAI_MODEL, "retrieved cases and the graph"),
+    )
+    return {
+        "status": "not_run",
+        "seed": SEED,
+        "holdout_size": HOLDOUT_N,
+        "temperature": 0,
+        "reason": "These four configurations were not executed. No score was invented.",
+        "configurations": [
+            {"id": name, "provider": provider, "model": model, "grounding": grounding, "status": "not_run", "summary": None}
+            for name, provider, model, grounding in specs
+        ],
+    }
 
 
 def run(judge: bool = False) -> dict:
@@ -776,8 +802,31 @@ def _markdown(report: dict) -> str:
         lines.append(f"Holdout cases leaked into retrieval for: {', '.join(leaks)}.")
     else:
         lines.append("No held-out case id was returned by retrieval.")
+    lines.extend(_four_way_section(report.get("four_way")))
     lines.append("")
     return "\n".join(lines)
+
+
+def _four_way_section(block: dict | None) -> list[str]:
+    if not block:
+        return []
+    lines = [
+        "",
+        "## SLM and GPT, same 30 cases",
+        "",
+        f"Seed {block.get('seed', SEED)}. Holdout size {block.get('holdout_size', HOLDOUT_N)}. "
+        f"Temperature for this experiment is {block.get('temperature', 0)}. Status: {block.get('status')}.",
+        "",
+        block.get("reason") or "",
+        "",
+        "| Configuration | Provider | Model | Grounding | Status |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for item in block.get("configurations") or []:
+        lines.append(
+            f"| {item.get('id')} | {item.get('provider')} | {item.get('model')} | {item.get('grounding')} | {item.get('status')} |"
+        )
+    return lines
 
 
 def _label_section(audit: dict | None) -> list[str]:

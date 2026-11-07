@@ -7,12 +7,12 @@ import { cn } from "../lib/utils";
 const studioPaths = ["/studio", "/generic", "/twin", "/compare", "/insights", "/graph", "/why", "/explain", "/evidence", "/cases", "/admin"];
 
 const studioLinks = [
-  ["/generic", "Generic GPT"],
-  ["/twin", "Doctor's Twin"],
+  ["/generic", "Generic"],
+  ["/twin", "Twin"],
   ["/compare", "Side by side"],
   ["/graph", "Graph"],
   ["/why", "Why"],
-  ["/insights", "Scores"],
+  ["/insights", "Difference"],
 ];
 
 function LinkItem({ to, label, onClick }: { to: string; label: string; onClick?: () => void }) {
@@ -69,7 +69,11 @@ export function Layout({ children }: { children: ReactNode }) {
                 ))}
               </>
             ) : (
-              <LinkItem to="/consultation" label="Consultation" />
+              <>
+                <LinkItem to="/consultation" label="Consultation" />
+                <LinkItem to="/records" label="Records" />
+                <LinkItem to="/studio" label="Compare" />
+              </>
             )}
           </nav>
           <button
@@ -112,7 +116,8 @@ export function Layout({ children }: { children: ReactNode }) {
                 <>
                   <LinkItem to="/" label="Home" onClick={close} />
                   <LinkItem to="/consultation" label="Consultation" onClick={close} />
-                  <LinkItem to="/studio" label="Which is stronger" onClick={close} />
+                  <LinkItem to="/records" label="Records" onClick={close} />
+                  <LinkItem to="/studio" label="Compare" onClick={close} />
                 </>
               )}
             </div>

@@ -14,6 +14,9 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
 APP_ENV = os.getenv("APP_ENV", "development")
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").strip().lower() or "openai"
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
 
 for folder in [DATA_RAW_DIR, DATA_PROCESSED_DIR, OUTPUT_DIR, OUTPUT_DIR / "logs", OUTPUT_DIR / "reports", OUTPUT_DIR / "demo_exports"]:
     folder.mkdir(parents=True, exist_ok=True)

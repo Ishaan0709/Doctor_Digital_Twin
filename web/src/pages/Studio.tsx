@@ -11,7 +11,7 @@ const rooms = [
   ["/compare", "Side by side", "Both consultations on one page."],
   ["/graph", "The graph", "The links this run actually used."],
   ["/why", "Why this plan", "Cases, uniqueness, and the confidence number."],
-  ["/insights", "The scores", "Which side leads on each factor, and why."],
+  ["/insights", "The difference", "What the generic answer sees, and what the twin is allowed to use."],
 ];
 
 export default function Studio() {
@@ -22,7 +22,7 @@ export default function Studio() {
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#123a6b] dark:text-[#8eb8e8]">Comparison</p>
       <h1 className="mt-2 max-w-3xl text-4xl font-semibold leading-tight text-[#0b1f3a] dark:text-white md:text-5xl">Two consultations. Then the difference.</h1>
       <p className="mt-4 max-w-2xl text-lg leading-8 text-[#2c4060] dark:text-[#d5e4f0]">
-        Add this patient the same way as a consultation. Use the sample if you want a filled visit, or type your own. Then open each answer, the graph, and the scores.
+        Add this patient the same way as a consultation. Use the sample if you want a filled visit, or type your own. Then open each answer and the graph. The comparison page does not show a scoreboard.
       </p>
       <Card className="mt-6">
         <h2 className="text-xl font-semibold">{patient ? `Details for ${patient.name}` : "This patient's details"}</h2>

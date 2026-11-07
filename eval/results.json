@@ -2264,5 +2264,46 @@
       }
     ],
     "reason": "Risk agreement and follow-up agreement were the same 0.23 for every system because the extractor labeled the answer urgent and immediate whenever those words appeared. Generic GPT and GPT with retrieved cases always include the fixed line \u201cEscalate immediately if chest pain worsens, rest pain appears, or dyspnea increases.\u201d The twin prompt also tells the model to mention urgent care. Those words are a safety line, not the risk level of the plan and not the follow-up interval. The two columns are not scored."
+  },
+  "four_way": {
+    "status": "not_run",
+    "seed": 17,
+    "holdout_size": 30,
+    "temperature": 0,
+    "reason": "These four configurations were not executed. No score was invented.",
+    "configurations": [
+      {
+        "id": "slm_generic",
+        "provider": "ollama",
+        "model": "llama3.2",
+        "grounding": "intake only",
+        "status": "not_run",
+        "summary": null
+      },
+      {
+        "id": "slm_twin",
+        "provider": "ollama",
+        "model": "llama3.2",
+        "grounding": "retrieved cases and the graph",
+        "status": "not_run",
+        "summary": null
+      },
+      {
+        "id": "gpt_generic",
+        "provider": "openai",
+        "model": "gpt-4o-mini",
+        "grounding": "intake only",
+        "status": "not_run",
+        "summary": null
+      },
+      {
+        "id": "gpt_twin",
+        "provider": "openai",
+        "model": "gpt-4o-mini",
+        "grounding": "retrieved cases and the graph",
+        "status": "not_run",
+        "summary": null
+      }
+    ]
   }
 }

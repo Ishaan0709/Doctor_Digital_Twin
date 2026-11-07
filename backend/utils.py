@@ -1,7 +1,5 @@
 from typing import Any, Dict, Iterator, List, Optional
 
-from openai import OpenAI
-
 from backend.context import (
     DISCLAIMER,
     clarifying_questions,
@@ -10,16 +8,14 @@ from backend.context import (
     style_rules_text,
     timeline_context,
 )
-from config import OPENAI_API_KEY, OPENAI_MODEL
+from backend.llm import complete, stream_text
 from graph_rag.build_graph import get_cached_graph, graph_as_payload
+from graph_rag.history import evidence_line, history_links
 from graph_rag.reasoning import graph_reasoning
 from rag.rerank import rerank_cases
 from rag.retrieve import retrieve_similar_cases
 from twin_engine.personalization import extract_uniqueness_flags
 from twin_engine.twin_prompt import build_twin_prompt, load_prompt
-
-_CLIENT: Optional[OpenAI] = None
-
 
 def confidence_breakdown(retrieved_count: int, graph_link_count: int) -> Dict[str, Any]:
     base = 0.60
@@ -36,46 +32,12 @@ def confidence_breakdown(retrieved_count: int, graph_link_count: int) -> Dict[st
     }
 
 
-def _client() -> OpenAI:
-    global _CLIENT
-    if _CLIENT is None:
-        _CLIENT = OpenAI(api_key=OPENAI_API_KEY)
-    return _CLIENT
+def _safe_openai_chat(system_prompt: str, user_prompt: str, provider: Optional[str] = None) -> str:
+    return complete(system_prompt, user_prompt, provider=provider)
 
 
-def _safe_openai_chat(system_prompt: str, user_prompt: str) -> str:
-    if not OPENAI_API_KEY:
-        return "OpenAI API key not configured. Add OPENAI_API_KEY in .env to enable live AI generation."
-    try:
-        response = _client().chat.completions.create(
-            model=OPENAI_MODEL,
-            temperature=0.2,
-            messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
-        )
-        return response.choices[0].message.content or ""
-    except Exception as exc:
-        return f"AI generation temporarily unavailable: {exc}"
-
-
-def iter_openai_chat(system_prompt: str, user_prompt: str) -> Iterator[str]:
-    if not OPENAI_API_KEY:
-        yield "OpenAI API key not configured. Add OPENAI_API_KEY in .env to enable live AI generation."
-        return
-    try:
-        stream = _client().chat.completions.create(
-            model=OPENAI_MODEL,
-            temperature=0.2,
-            stream=True,
-            messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
-        )
-        for chunk in stream:
-            if not chunk.choices:
-                continue
-            text = chunk.choices[0].delta.content
-            if text:
-                yield text
-    except Exception as exc:
-        yield f"AI generation temporarily unavailable: {exc}"
+def iter_openai_chat(system_prompt: str, user_prompt: str, provider: Optional[str] = None) -> Iterator[str]:
+    yield from stream_text(system_prompt, user_prompt, provider=provider)
 
 
 def patient_to_text(patient: Dict[str, Any]) -> str:
@@ -214,6 +176,10 @@ def prepare_twin_bundle(patient: Dict[str, Any], exclude_ids=None, graph=None, s
     if graph is None:
         graph = get_cached_graph()
     graph_result = graph_reasoning(patient_text, graph)
+    for link in history_links(patient_text, retrieved):
+        if link not in graph_result["links"]:
+            graph_result["links"].append(link)
+            graph_result["evidence_summary"].append(evidence_line(link))
     uniqueness_flags = extract_uniqueness_flags(patient)
     retrieved_text = "\n".join(_case_line(case) for case in retrieved) or "No similar cases retrieved."
     prompt = build_twin_prompt(

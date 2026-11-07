@@ -9,6 +9,17 @@ This is decision support for learning and demonstration. It is not a diagnosis, 
 
 The live product is a React site served by one FastAPI process. Open it at **http://localhost:8000**.
 
+```text
+Browser (web/) → FastAPI (backend/) → RAG (rag/) + graph (graph_rag/) → LLM
+                                      ↘ data/raw CSVs and data/processed FAISS index
+```
+
+`LLM_PROVIDER=openai` is the default (`gpt-4o-mini`). Set `LLM_PROVIDER=ollama` to use a local model (`OLLAMA_MODEL`, default `llama3.2`) at `OLLAMA_BASE_URL`. Install Ollama, run `ollama serve`, then `ollama pull llama3.2`. The website does not change when the provider changes. Live answers use temperature 0.2.
+
+The product screen explains the difference in words: a generic answer sees this visit only; the twin also sees retrieved cases and graph links from those records. It does not show benchmark charts. Numerical test-overlap scores, when a run exists, stay in `eval/REPORT.md`. A four-way SLM versus GPT experiment on the same 30 held-out cases is defined there. It is marked not run until those model calls actually happen. Do not treat a missing run as a win for either model.
+
+There is no user-account database. Past visits, profiles, and timelines are CSV files. The doctor view accepts or edits a draft; that draft is not a signed clinical note.
+
 ---
 
 ## On this laptop
