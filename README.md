@@ -12,7 +12,7 @@ Locally: http://localhost:8000
 
 ## What to show
 
-The site has four pages, plus the graph opened from a consultation.
+The site has five pages. Graph is also in the bar.
 
 | Page | What it is |
 | --- | --- |
@@ -20,7 +20,7 @@ The site has four pages, plus the graph opened from a consultation.
 | Consultation | One form, then Dr. Pandey’s twin. Suggested questions are clickable. A typed question works too. Doctor’s view can accept, edit, or ask the patient to come in. |
 | Records | The six CSV files, with the real rows, counts, and charts. |
 | Compare | Writes whichever answer is missing and shows both. You do not run them on separate pages. |
-| Graph | Opened from the consultation. The nodes and edges for this visit. |
+| Graph | This patient's links, and the entire graph, on one page. |
 
 The small line under the name is the model actually answering (`gpt-4o-mini`, or a local Ollama model if that is selected).
 

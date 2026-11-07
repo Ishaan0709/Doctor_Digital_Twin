@@ -22,6 +22,7 @@ from backend.utils import (
     generate_generic_consultation,
     generate_twin_consultation,
     get_case_matches,
+    get_full_graph,
     get_graph_payload,
     iter_openai_chat,
     prepare_generic_bundle,
@@ -140,6 +141,11 @@ def generic(payload: PatientInput):
 @router.post("/api/consult/twin", response_model=TwinResponse)
 def twin(payload: PatientInput):
     return _public_bundle(_guard(lambda person: generate_twin_consultation(person, provider=live_provider("twin")), _patient(payload)))
+
+
+@router.get("/api/graph")
+def full_graph() -> dict:
+    return get_full_graph()
 
 
 @router.post("/graph", response_model=GraphResponse)

@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button, Card, PageHeader, Skeleton } from "../components/ui";
-import { postJson } from "../lib/api";
+import { getJson, postJson } from "../lib/api";
 import { useAppStore } from "../store/useAppStore";
 
 interface GraphNode {
@@ -169,7 +169,7 @@ function rim(from: { x: number; y: number }, to: { x: number; y: number }) {
   return { x: from.x + dx * t, y: from.y + dy * t };
 }
 
-function PatientGraph({ payload, dark, patientName }: { payload: GraphPayload; dark: boolean; patientName: string }) {
+function PatientGraph({ payload, dark, patientName, scope }: { payload: GraphPayload; dark: boolean; patientName: string; scope: "patient" | "all" }) {
   const model = useMemo(() => {
     const names = new Map(payload.nodes.map((node) => [String(node.id), nodeName(node)]));
     const links: GraphLink[] = [];
@@ -196,11 +196,6 @@ function PatientGraph({ payload, dark, patientName }: { payload: GraphPayload; d
     };
   }, [payload]);
 
-  const [params] = useSearchParams();
-  const [scope, setScope] = useState<"patient" | "all">(params.get("scope") === "all" ? "all" : "patient");
-  useEffect(() => {
-    setScope(params.get("scope") === "all" ? "all" : "patient");
-  }, [params]);
   const showingPatient = scope === "patient";
   const links = showingPatient ? model.patientLinks : model.links;
   const layout = showingPatient ? model.patientLayout : model.layout;
@@ -258,14 +253,6 @@ function PatientGraph({ payload, dark, patientName }: { payload: GraphPayload; d
     focusNodes.add(target);
   }
 
-  function show(nextScope: "patient" | "all") {
-    setScope(nextScope);
-    setSelected(null);
-    const next = { zoom: 1, x: 0, y: 0 };
-    viewRef.current = next;
-    setView(next);
-  }
-
   function zoomBy(factor: number) {
     setView((current) => {
       const next = { ...current, zoom: Math.min(2.8, Math.max(0.55, current.zoom * factor)) };
@@ -314,10 +301,6 @@ function PatientGraph({ payload, dark, patientName }: { payload: GraphPayload; d
 
   return (
     <div>
-      <div className="mb-3 inline-flex rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-white/10 dark:bg-white/5" role="group" aria-label="Graph scope">
-        <button type="button" aria-pressed={showingPatient} className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${showingPatient ? "bg-sky-500 text-slate-950" : "text-slate-600 dark:text-slate-300"}`} onClick={() => show("patient")}>{patientName}</button>
-        <button type="button" aria-pressed={!showingPatient} className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${!showingPatient ? "bg-sky-500 text-slate-950" : "text-slate-600 dark:text-slate-300"}`} onClick={() => show("all")}>Entire graph</button>
-      </div>
       <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500">
         {KINDS.map((kind) => (
           <span key={kind.id} className="inline-flex items-center gap-1.5">
@@ -479,25 +462,35 @@ export default function GraphPage() {
   const [payload, setPayload] = useState<GraphPayload | null>(null);
 
   useEffect(() => {
-    if (!patient) return;
-    postJson<GraphPayload>("/api/evidence/graph", patient)
-      .then(setPayload)
-      .catch((error: Error) => toast.error(error.message));
+    const request = patient
+      ? postJson<GraphPayload>("/api/evidence/graph", patient)
+      : getJson<GraphPayload>("/api/graph");
+    request.then(setPayload).catch((error: Error) => toast.error(error.message));
   }, [patient]);
 
-  if (!patient) return <Card><p>Start a consultation first. The graph uses those details.</p><Link to="/consultation" className="text-sm text-[#8a6a3b]">Open the consultation</Link></Card>;
-
   return (
-    <div>
-      <PageHeader eyebrow="Graph" title="Links for this visit" caption="The nodes and edges come from the two graph files. Drag the map. This is not a diagnosis." />
-      {fromConsultation && <Button className="mb-4" variant="primary" onClick={() => navigate("/consultation")}>Back to consultation</Button>}
-      {!payload && <Skeleton className="h-[640px]" />}
-      {payload && (
-        <Card>
-          <PatientGraph payload={payload} dark={dark} patientName={patient.name} />
-        </Card>
-      )}
-      <Button className="mt-4" variant="primary" onClick={() => navigate("/consultation")}>Back to the consultation</Button>
+    <div className="space-y-8">
+      <PageHeader eyebrow="Graph" title="Two maps from the same files" caption="The first map is the links touched by the current visit. The second is every node and edge in the graph files. Drag either map. This is not a diagnosis." />
+      {fromConsultation && <Button variant="primary" onClick={() => navigate("/consultation")}>Back to consultation</Button>}
+      <section id="patient">
+        <h2 className="font-display text-2xl font-semibold">This patient's links</h2>
+        {!patient && <Card className="mt-3"><p>Start a consultation to highlight one visit.</p><Link to="/consultation" className="mt-2 inline-block text-sm text-[#8a6a3b]">Open the consultation</Link></Card>}
+        {patient && !payload && <Skeleton className="mt-3 h-[420px]" />}
+        {patient && payload && (
+          <Card className="mt-3">
+            <PatientGraph payload={payload} dark={dark} patientName={patient.name} scope="patient" />
+          </Card>
+        )}
+      </section>
+      <section id="entire">
+        <h2 className="font-display text-2xl font-semibold">Entire graph</h2>
+        {!payload && <Skeleton className="mt-3 h-[420px]" />}
+        {payload && (
+          <Card className="mt-3">
+            <PatientGraph payload={payload} dark={dark} patientName={patient?.name || "This visit"} scope="all" />
+          </Card>
+        )}
+      </section>
     </div>
   );
 }

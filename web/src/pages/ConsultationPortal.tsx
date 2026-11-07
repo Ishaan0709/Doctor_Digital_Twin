@@ -266,8 +266,8 @@ export default function ConsultationPortal() {
                   ))}
                 </ul>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Button variant="primary" onClick={() => navigate("/graph?scope=patient&from=consultation")}>This patient's graph</Button>
-                  <Button onClick={() => navigate("/graph?scope=all&from=consultation")}>Entire graph</Button>
+                  <Button variant="primary" onClick={() => navigate("/graph?from=consultation#patient")}>This patient's graph</Button>
+                  <Button onClick={() => navigate("/graph?from=consultation#entire")}>Entire graph</Button>
                 </div>
               </Fold>
             </>

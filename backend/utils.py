@@ -298,6 +298,12 @@ def get_case_matches(patient: Dict[str, Any]) -> List[Dict[str, Any]]:
     return retrieve_similar_cases(patient_to_text(patient), top_k=8)
 
 
+def get_full_graph() -> Dict[str, Any]:
+    payload = graph_as_payload(get_cached_graph())
+    payload["evidence_summary"] = []
+    return payload
+
+
 def get_graph_payload(patient: Dict[str, Any]) -> Dict[str, Any]:
     graph = get_cached_graph()
     reasoning = graph_reasoning(patient_to_text(patient), graph)
