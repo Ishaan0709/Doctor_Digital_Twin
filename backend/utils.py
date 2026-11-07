@@ -137,9 +137,9 @@ def prepare_generic_bundle(patient: Dict[str, Any]) -> Dict[str, Any]:
     return payload
 
 
-def generate_generic_consultation(patient: Dict[str, Any]) -> Dict[str, Any]:
+def generate_generic_consultation(patient: Dict[str, Any], provider: Optional[str] = None) -> Dict[str, Any]:
     bundle = prepare_generic_bundle(patient)
-    narrative = _safe_openai_chat(bundle["system_prompt"], bundle["user_prompt"])
+    narrative = _safe_openai_chat(bundle["system_prompt"], bundle["user_prompt"], provider=provider)
     bundle["consultation_summary"] = narrative
     return bundle
 
@@ -218,9 +218,9 @@ def prepare_twin_bundle(patient: Dict[str, Any], exclude_ids=None, graph=None, s
     return payload
 
 
-def generate_twin_consultation(patient: Dict[str, Any], exclude_ids=None, graph=None, style_text=None) -> Dict[str, Any]:
+def generate_twin_consultation(patient: Dict[str, Any], exclude_ids=None, graph=None, style_text=None, provider: Optional[str] = None) -> Dict[str, Any]:
     bundle = prepare_twin_bundle(patient, exclude_ids=exclude_ids, graph=graph, style_text=style_text)
-    bundle["assessment"] = _safe_openai_chat(bundle["system_prompt"], bundle["user_prompt"])
+    bundle["assessment"] = _safe_openai_chat(bundle["system_prompt"], bundle["user_prompt"], provider=provider)
     return bundle
 
 
@@ -239,6 +239,7 @@ def generate_followup_reply(
     user_question: str,
     twin: Optional[Dict[str, Any]] = None,
     history: Optional[List[Dict[str, str]]] = None,
+    provider: Optional[str] = None,
 ) -> str:
     """
     mode: "general" or "specialist"
@@ -277,7 +278,7 @@ def generate_followup_reply(
             f"{patient_text}\n\n{timeline_context(patient.get('profile_id'))}\n\n{twin_context}\n\n"
             f"{extra}\n\nClarifying gaps:\n{question_block or 'None'}\n\nPatient question:\n{user_question}"
         )
-        return _safe_openai_chat(system, user)
+        return _safe_openai_chat(system, user, provider=provider)
 
     system = (
         "You are a general medical AI assistant for decision-support. "
@@ -290,7 +291,7 @@ def generate_followup_reply(
         f"{DISCLAIMER}"
     )
     user = f"{patient_text}\n\n{extra}\n\nClarifying gaps:\n{question_block or 'None'}\n\nPatient question:\n{user_question}"
-    return _safe_openai_chat(system, user)
+    return _safe_openai_chat(system, user, provider=provider)
 
 
 def get_case_matches(patient: Dict[str, Any]) -> List[Dict[str, Any]]:

@@ -127,8 +127,8 @@ export default function ConsultationPortal() {
   const status = portal.doctorStatus;
   return (
     <div>
-      <PageHeader eyebrow="Consultation" title={portal.patient ? portal.patient.name : "Your consultation"} caption="The Doctor's Twin answers from the details you just gave. Open a section only if you want it." />
-      <ModelNote className="-mt-3 mb-5" />
+      <PageHeader eyebrow="Consultation" title={portal.patient ? portal.patient.name : "Your consultation"} caption="A local model writes this visit. It reads the saved cases and the graph on this machine, so that long prompt is not sent to a paid API." />
+      <ModelNote role="visit" className="-mt-3 mb-5" />
       {portal.view === "Doctor" ? (
         <Card>
           <h2 className="text-xl font-semibold">Doctor's view</h2>

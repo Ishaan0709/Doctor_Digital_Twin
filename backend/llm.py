@@ -33,6 +33,13 @@ def active_model(provider: Optional[str] = None) -> str:
     return OPENAI_MODEL if name == "openai" else OLLAMA_MODEL
 
 
+def live_provider(kind: str, mode: str = "general") -> str:
+    """The Vimlesh visit uses the local model. The plain comparison answer uses GPT."""
+    if kind == "twin" or (kind == "followup" and mode == "specialist"):
+        return "ollama"
+    return "openai"
+
+
 def _unavailable(detail: str) -> str:
     return f"AI generation temporarily unavailable: {detail}"
 

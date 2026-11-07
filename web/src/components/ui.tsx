@@ -120,19 +120,21 @@ export function Confidence({ result }: { result: Pick<TwinResult, "confidence_sc
   );
 }
 
-export function ModelNote({ className }: { className?: string }) {
+export function ModelNote({ role = "pair", className }: { role?: "visit" | "gpt" | "pair"; className?: string }) {
   const [label, setLabel] = useState("");
   useEffect(() => {
-    getJson<{ llm_provider?: string; llm_model?: string }>("/health")
+    getJson<{ visit_model?: string; comparison_model?: string; llm_model?: string }>("/health")
       .then((data) => {
-        const model = data.llm_model || "gpt-4o-mini";
-        const kind = data.llm_provider === "ollama" ? "Local SLM" : "Model";
-        setLabel(`${kind} · ${model}`);
+        const visit = data.visit_model || "llama3.2";
+        const plain = data.comparison_model || "gpt-4o-mini";
+        if (role === "visit") setLabel(`Local SLM · ${visit} · cases and graph stay on this machine`);
+        else if (role === "gpt") setLabel(`GPT · ${plain} · this visit only`);
+        else setLabel(`Vimlesh visit · local SLM ${visit} · comparison · GPT ${plain}`);
       })
       .catch(() => setLabel(""));
-  }, []);
+  }, [role]);
   if (!label) return null;
-  return <p className={cn("text-[11px] uppercase tracking-[0.18em] text-[#8a6a3b]", className)}>{label}</p>;
+  return <p className={cn("text-[11px] uppercase tracking-[0.16em] text-[#8a6a3b]", className)}>{label}</p>;
 }
 
 export const fieldClass =

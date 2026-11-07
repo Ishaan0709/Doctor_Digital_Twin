@@ -38,7 +38,7 @@ Browser (web/) → FastAPI (backend/) → RAG (rag/) + graph (graph_rag/) → LL
 
 There is no user database and no Neo4j. The store is six CSV files. The graph lives in memory.
 
-`LLM_PROVIDER=openai` uses `gpt-4o-mini`. `LLM_PROVIDER=ollama` uses a local model (`OLLAMA_MODEL`, default `llama3.2`). Live answers use temperature 0.2. The pages do not show accuracy charts. The held-out numbers, when a run exists, stay in `eval/REPORT.md`.
+The Vimlesh consultation is a local model (`OLLAMA_MODEL`, default `llama3.2`) with retrieval and the graph. That prompt stays on the machine: the case file is not uploaded, and those tokens are not billed. The other column on Compare is ordinary GPT (`gpt-4o-mini`) from the current visit only. It does not search the cases. Live answers use temperature 0.2. The pages do not show accuracy charts. The held-out numbers, when a run exists, stay in `eval/REPORT.md`.
 
 ## Folder map
 

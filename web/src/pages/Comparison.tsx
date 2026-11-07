@@ -102,17 +102,20 @@ export default function Comparison() {
 
   return (
     <div>
-      <PageHeader eyebrow="Compare" title={`Two readings for ${person.name}`} caption="The left answer sees only this visit. The right answer also uses similar cases and the graph. Neither one is a diagnosis." />
-      <ModelNote className="mb-4" />
+      <PageHeader eyebrow="Compare" title={`Two readings for ${person.name}`} caption="The left answer is ordinary GPT, from this visit only. The right answer is the local model, with the retrieved cases and the graph. The case file never has to leave the machine for that reading." />
+      <div className="mb-4 flex flex-wrap gap-4">
+        <ModelNote role="gpt" />
+        <ModelNote role="visit" />
+      </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <p className="text-xs uppercase tracking-[0.18em] text-[#8a6a3b]">This visit only</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-[#8a6a3b]">GPT · this visit only</p>
           <h2 className="mt-1 font-display text-2xl font-semibold">General answer</h2>
           {waitingGeneric ? <Skeleton className="mt-4 h-40" /> : <RichText text={genericText} />}
           {running && waitingGeneric && <p className="mt-3 text-sm text-[#5c5348]">Writing the general answer…</p>}
         </Card>
         <Card>
-          <p className="text-xs uppercase tracking-[0.18em] text-[#8a6a3b]">Cases and graph</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-[#8a6a3b]">Local SLM · cases and graph</p>
           <h2 className="mt-1 font-display text-2xl font-semibold">Dr. Pandey’s twin</h2>
           {waitingTwin ? <Skeleton className="mt-4 h-40" /> : <RichText text={twinText} />}
           {running && waitingTwin && <p className="mt-3 text-sm text-[#5c5348]">Writing the twin…</p>}

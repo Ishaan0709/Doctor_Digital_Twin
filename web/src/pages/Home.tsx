@@ -19,7 +19,7 @@ export default function Home() {
             Consult your doctor’s twin anytime, built on their own knowledge, and get the guidance you need to feel better, sooner. Your doctor still oversees your care.
           </p>
           <p className="mt-4 max-w-xl leading-7 text-[#2c4060] dark:text-[#d5e4f0]">
-            A visit starts with your history. The answer is decision support for preventive cardiology. It does not examine you, and it does not replace the doctor who sees you.
+            The consultation runs on a local model. The 500 cases and the graph stay on this machine, so that longer prompt is not billed as API tokens. Compare places an ordinary GPT answer of the same visit beside it.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button className="px-8 py-4 text-base" variant="primary" onClick={() => navigate("/consultation")}>Begin a consultation</Button>

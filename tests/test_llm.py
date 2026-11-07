@@ -119,3 +119,10 @@ def test_default_provider_follows_the_environment(monkeypatch):
     monkeypatch.setattr(llm, "LLM_PROVIDER", "ollama")
     assert llm.resolve_provider() == "ollama"
     assert llm.resolve_provider("openai") == "openai"
+
+
+def test_the_visit_uses_the_local_model_and_comparison_uses_gpt():
+    assert llm.live_provider("twin") == "ollama"
+    assert llm.live_provider("followup", "specialist") == "ollama"
+    assert llm.live_provider("generic") == "openai"
+    assert llm.live_provider("followup", "general") == "openai"

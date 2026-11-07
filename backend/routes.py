@@ -28,7 +28,7 @@ from backend.utils import (
     prepare_twin_bundle,
     summarize_patient,
 )
-from backend.llm import active_model, resolve_provider
+from backend.llm import active_model, live_provider
 from config import BASE_DIR
 from twin_engine.compare_engine import generate_comparison_metrics
 from twin_engine.doctor_profile import DOCTOR_PROFILE
@@ -58,12 +58,18 @@ def _public_bundle(bundle: Dict[str, Any]) -> Dict[str, Any]:
 
 @router.get("/health")
 def health() -> dict:
-    try:
-        provider = resolve_provider()
-        model = active_model(provider)
-    except Exception:
-        provider, model = "unconfigured", ""
-    return {"status": "ok", "service": "CardioTwin AI", "llm_provider": provider, "llm_model": model}
+    visit = live_provider("twin")
+    plain = live_provider("generic")
+    return {
+        "status": "ok",
+        "service": "CardioTwin AI",
+        "llm_provider": visit,
+        "llm_model": active_model(visit),
+        "visit_provider": visit,
+        "visit_model": active_model(visit),
+        "comparison_provider": plain,
+        "comparison_model": active_model(plain),
+    }
 
 
 @router.get("/api/health")
@@ -117,8 +123,8 @@ def patient_summary(payload: PatientInput) -> dict:
 def analyze(payload: PatientInput):
     patient = _patient(payload)
     try:
-        generic = _public_bundle(generate_generic_consultation(patient))
-        twin = _public_bundle(generate_twin_consultation(patient))
+        generic = _public_bundle(generate_generic_consultation(patient, provider=live_provider("generic")))
+        twin = _public_bundle(generate_twin_consultation(patient, provider=live_provider("twin")))
         return {"patient_summary": summarize_patient(patient), "generic": generic, "twin": twin}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Consultation failed: {exc}") from exc
@@ -127,13 +133,13 @@ def analyze(payload: PatientInput):
 @router.post("/generic", response_model=GenericResponse)
 @router.post("/api/consult/generic", response_model=GenericResponse)
 def generic(payload: PatientInput):
-    return _public_bundle(_guard(generate_generic_consultation, _patient(payload)))
+    return _public_bundle(_guard(lambda person: generate_generic_consultation(person, provider=live_provider("generic")), _patient(payload)))
 
 
 @router.post("/twin", response_model=TwinResponse)
 @router.post("/api/consult/twin", response_model=TwinResponse)
 def twin(payload: PatientInput):
-    return _public_bundle(_guard(generate_twin_consultation, _patient(payload)))
+    return _public_bundle(_guard(lambda person: generate_twin_consultation(person, provider=live_provider("twin")), _patient(payload)))
 
 
 @router.post("/graph", response_model=GraphResponse)
@@ -159,6 +165,7 @@ def followup(payload: FollowupRequest):
             payload.user_question,
             twin=payload.twin,
             history=[turn.model_dump() for turn in payload.history],
+            provider=live_provider("followup", payload.mode),
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Consultation failed: {exc}") from exc
@@ -225,7 +232,7 @@ def consult_stream(payload: StreamRequest):
                 bundle = prepare_generic_bundle(patient)
                 yield _sse({"type": "meta", "result": _public_bundle(bundle)})
                 parts: list[str] = []
-                for token in iter_openai_chat(bundle["system_prompt"], bundle["user_prompt"], provider=payload.provider):
+                for token in iter_openai_chat(bundle["system_prompt"], bundle["user_prompt"], provider=live_provider("generic")):
                     parts.append(token)
                     yield _sse({"type": "token", "text": token})
                 yield _sse({"type": "done", "text": "".join(parts), "field": "consultation_summary"})
@@ -235,7 +242,7 @@ def consult_stream(payload: StreamRequest):
                 bundle = prepare_twin_bundle(patient)
                 yield _sse({"type": "meta", "result": _public_bundle(bundle)})
                 parts = []
-                for token in iter_openai_chat(bundle["system_prompt"], bundle["user_prompt"], provider=payload.provider):
+                for token in iter_openai_chat(bundle["system_prompt"], bundle["user_prompt"], provider=live_provider("twin")):
                     parts.append(token)
                     yield _sse({"type": "token", "text": token})
                 yield _sse({"type": "done", "text": "".join(parts), "field": "assessment"})
@@ -286,7 +293,7 @@ def consult_stream(payload: StreamRequest):
                     sources = [{"type": "patient", "text": "General consultation uses the current intake only."}]
                 yield _sse({"type": "meta", "sources": sources, "disclaimer": DISCLAIMER, "clarifying_questions": questions})
                 parts = []
-                for token in iter_openai_chat(system, user, provider=payload.provider):
+                for token in iter_openai_chat(system, user, provider=live_provider("followup", payload.mode)):
                     parts.append(token)
                     yield _sse({"type": "token", "text": token})
                 yield _sse({"type": "done", "text": "".join(parts), "field": "reply"})
