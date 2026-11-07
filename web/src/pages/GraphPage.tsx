@@ -485,11 +485,11 @@ export default function GraphPage() {
       .catch((error: Error) => toast.error(error.message));
   }, [patient]);
 
-  if (!patient) return <Card><p>Please complete Patient Intake first.</p><Link to="/patient" className="text-sky-600">Open intake</Link></Card>;
+  if (!patient) return <Card><p>Start a consultation first. The graph uses those details.</p><Link to="/consultation" className="text-sm text-[#8a6a3b]">Open the consultation</Link></Card>;
 
   return (
     <div>
-      <PageHeader eyebrow="7 · Graph" title="Graph Intelligence" caption="Switch between this patient's links and the full cardiology graph. Drag it like a map." />
+      <PageHeader eyebrow="Graph" title="Links for this visit" caption="The nodes and edges come from the two graph files. Drag the map. This is not a diagnosis." />
       {fromConsultation && <Button className="mb-4" variant="primary" onClick={() => navigate("/consultation")}>Back to consultation</Button>}
       {!payload && <Skeleton className="h-[640px]" />}
       {payload && (
@@ -497,7 +497,7 @@ export default function GraphPage() {
           <PatientGraph payload={payload} dark={dark} patientName={patient.name} />
         </Card>
       )}
-      <Button className="mt-4" variant="primary" onClick={() => navigate("/why")}>See why this plan</Button>
+      <Button className="mt-4" variant="primary" onClick={() => navigate("/consultation")}>Back to the consultation</Button>
     </div>
   );
 }

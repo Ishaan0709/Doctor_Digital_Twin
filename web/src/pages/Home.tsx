@@ -13,33 +13,36 @@ export default function Home() {
     <div className="space-y-10">
       <section className="grid items-center gap-10 md:grid-cols-[1.15fr_0.85fr]">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#123a6b] dark:text-[#8eb8e8]">Dr. Vimlesh Pandey</p>
-          <h1 className="mt-3 text-4xl font-semibold leading-tight text-[#0b1f3a] dark:text-white md:text-5xl">Same doctor. Same expertise. Whenever you need it.</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8a6a3b]">Dr. Vimlesh Pandey</p>
+          <h1 className="mt-3 font-display text-4xl font-semibold leading-tight text-[#172033] dark:text-[#f7f4ef] md:text-5xl">Same doctor. Same expertise. Whenever you need it.</h1>
           <p className="mt-5 max-w-xl text-lg leading-8 text-[#2c4060] dark:text-[#d5e4f0]">
             Consult your doctor’s twin anytime, built on their own knowledge, and get the guidance you need to feel better, sooner. Your doctor still oversees your care.
           </p>
           <p className="mt-4 max-w-xl leading-7 text-[#2c4060] dark:text-[#d5e4f0]">
             A visit starts with your history. The answer is decision support for preventive cardiology. It does not examine you, and it does not replace the doctor who sees you.
           </p>
-          <Button className="mt-8 px-8 py-4 text-lg" variant="primary" onClick={() => navigate("/patient")}>Begin a consultation</Button>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button className="px-8 py-4 text-base" variant="primary" onClick={() => navigate("/consultation")}>Begin a consultation</Button>
+            <Button className="px-8 py-4 text-base" onClick={() => navigate("/compare")}>Compare both answers</Button>
+          </div>
         </div>
-        <img src="/doctor_photo.jpg?v=3" alt="Dr. Vimlesh Pandey" className="aspect-[4/5] w-full rounded-[2rem] object-cover object-top" />
+        <img src="/doctor_photo.jpg?v=3" alt="Dr. Vimlesh Pandey" className="aspect-[4/5] w-full rounded-[2rem] object-cover object-top shadow-[0_30px_80px_rgba(23,32,51,0.18)] ring-1 ring-[#eadfd2]" />
       </section>
       <section className="grid gap-4 md:grid-cols-3">
         {points.map(([title, body]) => (
-          <article key={title} className="rounded-2xl border border-[#c9daee] bg-white p-6 dark:border-white/10 dark:bg-[#102038]">
-            <h2 className="text-xl font-semibold text-[#0b1f3a] dark:text-white">{title}</h2>
+          <article key={title} className="rounded-[1.6rem] border border-[#eadfd2] bg-white/90 p-6 shadow-[0_18px_50px_rgba(23,32,51,0.05)] dark:border-white/10 dark:bg-[#121a2b]/90">
+            <h2 className="font-display text-2xl font-semibold text-[#172033] dark:text-[#f7f4ef]">{title}</h2>
             <p className="mt-3 leading-7 text-[#2c4060] dark:text-[#d5e4f0]">{body}</p>
           </article>
         ))}
       </section>
-      <section className="rounded-[2rem] bg-[#e7f1fb] px-6 py-8 text-[#0b1f3a] md:px-10 dark:bg-[#16345c] dark:text-[#e7f0fa]">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#123a6b] dark:text-[#9ec4ef]">Side by side</p>
-        <h2 className="mt-2 text-3xl font-semibold text-[#0b1f3a] dark:text-white">A general answer, next to the Doctor’s Twin.</h2>
-        <p className="mt-3 max-w-2xl text-lg leading-8 text-[#1a4a7a] dark:text-[#d5e4f0]">
-          Your consultation stays on your own visit. The comparison page places a general AI answer beside the Doctor’s Twin, then shows the graph and a short reason for each score.
+      <section className="rounded-[2rem] bg-[#172033] px-6 py-10 text-[#f7f4ef] md:px-10">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d7c4a3]">Side by side</p>
+        <h2 className="mt-2 font-display text-3xl font-semibold">A general answer, next to the Doctor’s Twin.</h2>
+        <p className="mt-3 max-w-2xl text-lg leading-8 text-[#e7dfd4]">
+          One click writes both. The left answer sees only this visit. The right answer also uses similar cases and the graph. You do not have to run them one page at a time.
         </p>
-        <button className="mt-6 rounded-full bg-[#123a6b] px-8 py-4 text-lg font-semibold text-white hover:bg-[#0c2d56]" onClick={() => navigate("/studio")}>
+        <button className="mt-6 rounded-full bg-[#172033] px-8 py-4 text-base font-medium text-[#f7f4ef] transition hover:-translate-y-0.5" onClick={() => navigate("/compare")}>
           Open the comparison
         </button>
       </section>

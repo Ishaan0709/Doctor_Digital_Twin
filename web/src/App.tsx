@@ -3,18 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Layout } from "./components/Layout";
 import Home from "./pages/Home";
 import ConsultationPortal from "./pages/ConsultationPortal";
-import PatientAnalysis from "./pages/PatientAnalysis";
-import GenericBaseline from "./pages/GenericBaseline";
-import VimleshTwin from "./pages/VimleshTwin";
 import Comparison from "./pages/Comparison";
-import Evidence from "./pages/Evidence";
-import HistoricalCases from "./pages/HistoricalCases";
 import GraphPage from "./pages/GraphPage";
-import Insights from "./pages/Insights";
-import Why from "./pages/Why";
-import Explain from "./pages/Explain";
-import Admin from "./pages/Admin";
-import Studio from "./pages/Studio";
 import Records from "./pages/Records";
 import { Card } from "./components/ui";
 
@@ -31,19 +21,9 @@ export default function App() {
           <Routes location={location}>
             <Route path="/" element={<Home />} />
             <Route path="/consultation" element={<ConsultationPortal />} />
-            <Route path="/patient" element={<PatientAnalysis />} />
-            <Route path="/generic" element={<GenericBaseline />} />
-            <Route path="/twin" element={<VimleshTwin />} />
-            <Route path="/compare" element={<Comparison />} />
-            <Route path="/evidence" element={<Evidence />} />
-            <Route path="/cases" element={<HistoricalCases />} />
-            <Route path="/graph" element={<GraphPage />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/why" element={<Why />} />
-            <Route path="/explain" element={<Explain />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/studio" element={<Studio />} />
             <Route path="/records" element={<Records />} />
+            <Route path="/compare" element={<Comparison />} />
+            <Route path="/graph" element={<GraphPage />} />
             <Route path="*" element={<Missing />} />
           </Routes>
         </motion.div>

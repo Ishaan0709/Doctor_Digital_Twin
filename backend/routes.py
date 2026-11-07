@@ -4,7 +4,7 @@ from typing import Any, Dict, Iterator
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
-from backend.context import DISCLAIMER, clarifying_questions, dataset_counts, dataset_registry, list_cases, list_profiles, list_timeline
+from backend.context import DISCLAIMER, clarifying_questions, dataset_counts, dataset_registry, library_bundle, list_cases, list_profiles, list_timeline
 from backend.models import (
     AnalyzeResponse,
     CasesResponse,
@@ -85,6 +85,11 @@ def bootstrap() -> dict:
 @router.get("/api/datasets")
 def datasets() -> dict:
     return {"stats": dataset_counts(), "registry": dataset_registry()}
+
+
+@router.get("/api/library")
+def library() -> dict:
+    return library_bundle()
 
 
 @router.get("/api/patients")

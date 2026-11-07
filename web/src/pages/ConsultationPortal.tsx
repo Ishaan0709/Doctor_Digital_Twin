@@ -4,7 +4,7 @@ import { Copy, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { PatientForm } from "../components/PatientForm";
 import { RichText } from "../components/RichText";
-import { BulletList, Button, Card, Disclaimer, Fold, PageHeader } from "../components/ui";
+import { BulletList, Button, Card, Disclaimer, Fold, ModelNote, PageHeader } from "../components/ui";
 import { streamConsult } from "../lib/api";
 import { bmiOf } from "../lib/utils";
 import { useAppStore } from "../store/useAppStore";
@@ -23,6 +23,11 @@ export default function ConsultationPortal() {
   const [edited, setEdited] = useState(portal.draft || "");
   const [question, setQuestion] = useState("");
   const [comeInNote, setComeInNote] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([
+    "What should I watch for tonight?",
+    "Which test matters first?",
+    "When should I see Dr. Pandey in person?",
+  ]);
 
   async function begin(mode: "general" | "specialist") {
     if (!portal.patient) return;
@@ -53,6 +58,8 @@ export default function ConsultationPortal() {
           });
           setEdited(text);
           setDraftText("");
+          const asked = (meta?.clarifying_questions || []).map((item) => item.trim()).filter(Boolean);
+          if (asked.length) setSuggestions(asked);
           if (mode === "general" && meta) setGeneric({ ...(meta as unknown as GenericResult), consultation_summary: text });
           if (twin) setTwin(twin);
         }
@@ -121,6 +128,7 @@ export default function ConsultationPortal() {
   return (
     <div>
       <PageHeader eyebrow="Consultation" title={portal.patient ? portal.patient.name : "Your consultation"} caption="The Doctor's Twin answers from the details you just gave. Open a section only if you want it." />
+      <ModelNote className="-mt-3 mb-5" />
       {portal.view === "Doctor" ? (
         <Card>
           <h2 className="text-xl font-semibold">Doctor's view</h2>
@@ -187,21 +195,52 @@ export default function ConsultationPortal() {
           {status === "in_person" && <p className="mb-3 rounded-xl bg-[#e7f1fb] px-4 py-3 text-sm font-semibold text-[#0b1f3a] dark:bg-[#16345c] dark:text-white">Dr. Pandey wants to see you in person. This is something the twin should not explain on its own. Please come to the clinic.</p>}
           <div className="max-h-[540px] space-y-3 overflow-y-auto pr-1">
             {portal.chat.map((message, index) => (
-              <div key={`${message.role}-${index}`} className={`w-fit max-w-[75%] rounded-2xl px-3 py-2 text-sm leading-6 ${message.role === "user" ? "ml-auto bg-[#123a6b] text-white" : "bg-[#f3f7fc] dark:bg-[#071422]"}`}>
+              <div key={`${message.role}-${index}`} className={`w-fit max-w-[85%] rounded-[1.4rem] px-4 py-3 text-sm leading-6 ${message.role === "user" ? "ml-auto bg-[#172033] text-[#f7f4ef]" : "border border-[#eadfd2] bg-[#fbf8f4] text-[#172033] dark:border-white/10 dark:bg-[#0b1220] dark:text-[#f4efe8]"}`}>
                 {message.role === "assistant" ? <RichText text={message.content} className="" /> : <p className="whitespace-pre-wrap">{message.content}</p>}
                 {message.role === "assistant" && (
-                  <div className="mt-2 flex gap-2">
+                  <div className="mt-2 flex gap-2 text-[#8a6a3b]">
                     <button aria-label="Copy message" onClick={() => copy(message.content)}><Copy size={14} /></button>
                     <button aria-label="Regenerate message" onClick={() => regenerate(index)}><RefreshCw size={14} /></button>
                   </div>
                 )}
               </div>
             ))}
-            {draftText && <div className="w-fit max-w-[75%] rounded-2xl bg-[#f3f7fc] px-3 py-2 text-sm leading-6 dark:bg-[#071422]"><RichText text={draftText} streaming className="" /></div>}
+            {draftText && <div className="w-fit max-w-[85%] rounded-[1.4rem] border border-[#eadfd2] bg-[#fbf8f4] px-4 py-3 text-sm leading-6 dark:border-white/10 dark:bg-[#0b1220]"><RichText text={draftText} streaming className="" /></div>}
           </div>
-          <form className="mt-4 flex items-center gap-2" onSubmit={(event) => { event.preventDefault(); if (!question.trim() || busy) return; const text = question.trim(); setQuestion(""); ask(text, portal.chat); }}>
-            <input className="h-10 min-w-0 flex-1 rounded-full border border-[#c5d7ea] bg-white px-4 text-sm text-[#0b1f3a] placeholder:text-[#5c7190] dark:border-white/10 dark:bg-[#071422] dark:text-[#e7f0fa] dark:placeholder:text-[#9eb0c8]" placeholder="Ask a follow-up" value={question} onChange={(e) => setQuestion(e.target.value)} />
-            <Button className="h-10 shrink-0 rounded-full px-4" variant="primary" disabled={busy}>{busy ? "…" : "Send"}</Button>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {suggestions.map((item) => (
+              <button
+                key={item}
+                type="button"
+                disabled={busy}
+                className="rounded-full border border-[#eadfd2] bg-white px-3 py-1.5 text-left text-sm text-[#172033] transition hover:border-[#b8956a] disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-[#f4efe8]"
+                onClick={() => ask(item, portal.chat)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <label className="mt-3 block text-xs uppercase tracking-[0.16em] text-[#8a6a3b]">
+            Or choose one
+            <select
+              className="mt-1 h-10 w-full rounded-full border border-[#eadfd2] bg-white px-4 text-sm normal-case tracking-normal text-[#172033] dark:border-white/10 dark:bg-[#0b1220] dark:text-[#f4efe8]"
+              defaultValue=""
+              disabled={busy}
+              onChange={(event) => {
+                const text = event.target.value;
+                event.target.value = "";
+                if (text) ask(text, portal.chat);
+              }}
+            >
+              <option value="">Suggested questions</option>
+              {suggestions.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+          </label>
+          <form className="mt-3 flex items-center gap-2" onSubmit={(event) => { event.preventDefault(); if (!question.trim() || busy) return; const text = question.trim(); setQuestion(""); ask(text, portal.chat); }}>
+            <input className="h-11 min-w-0 flex-1 rounded-full border border-[#eadfd2] bg-white px-4 text-sm text-[#172033] placeholder:text-[#8a8074] dark:border-white/10 dark:bg-[#0b1220] dark:text-[#f4efe8]" placeholder="Or ask in your own words" value={question} onChange={(e) => setQuestion(e.target.value)} />
+            <Button className="h-11 shrink-0 px-5" variant="primary" disabled={busy}>{busy ? "…" : "Send"}</Button>
           </form>
         </Card>
       )}

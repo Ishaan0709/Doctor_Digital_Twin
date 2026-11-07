@@ -164,9 +164,45 @@ def dataset_registry() -> List[Dict[str, Any]]:
                 "description": description,
                 "exists": path.exists(),
                 "rows": int(len(frame)) if path.exists() else 0,
+                "columns": [str(column) for column in frame.columns],
             }
         )
     return rows
+
+
+def library_bundle() -> Dict[str, Any]:
+    nodes = _records(table("nodes"))
+    names = {str(node.get("node_id")): str(node.get("name", "")) for node in nodes}
+    edges = []
+    for row in _records(table("edges")):
+        edges.append(
+            {
+                "source_id": row.get("source_id"),
+                "target_id": row.get("target_id"),
+                "relation": row.get("relation"),
+                "source_name": names.get(str(row.get("source_id")), ""),
+                "target_name": names.get(str(row.get("target_id")), ""),
+            }
+        )
+    cases = table("cases")
+
+    def tally(column: str) -> List[Dict[str, Any]]:
+        if cases.empty or column not in cases.columns:
+            return []
+        counts = cases[column].astype(str).value_counts()
+        return [{"label": str(label), "count": int(count)} for label, count in counts.items() if str(label).strip()]
+
+    style = table("style")
+    return {
+        "registry": dataset_registry(),
+        "style": _records(style),
+        "nodes": nodes,
+        "edges": edges,
+        "diagnoses": tally("diagnosis"),
+        "decisions": tally("treatment_decision"),
+        "profiles": list_profiles(),
+        "cases": list_cases(),
+    }
 
 
 def dataset_counts() -> Dict[str, int]:

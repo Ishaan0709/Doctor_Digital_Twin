@@ -2,28 +2,26 @@ import { useEffect, useState, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { useAppStore } from "../store/useAppStore";
+import { ModelNote } from "./ui";
 import { cn } from "../lib/utils";
 
-const studioPaths = ["/studio", "/generic", "/twin", "/compare", "/insights", "/graph", "/why", "/explain", "/evidence", "/cases", "/admin"];
-
-const studioLinks = [
-  ["/generic", "Generic"],
-  ["/twin", "Twin"],
-  ["/compare", "Side by side"],
-  ["/graph", "Graph"],
-  ["/why", "Why"],
-  ["/insights", "Difference"],
+const links = [
+  ["/", "Home"],
+  ["/consultation", "Consultation"],
+  ["/records", "Records"],
+  ["/compare", "Compare"],
 ];
 
 function LinkItem({ to, label, onClick }: { to: string; label: string; onClick?: () => void }) {
   return (
     <NavLink
       to={to}
+      end={to === "/"}
       onClick={onClick}
       className={({ isActive }) =>
         cn(
-          "rounded-full px-3 py-2 text-sm",
-          isActive ? "bg-[#123a6b] font-semibold text-white" : "text-[#1a1a1a] hover:bg-[#e7f1fb] dark:text-[#f4f7fb] dark:hover:bg-white/5",
+          "rounded-full px-3.5 py-2 text-sm transition",
+          isActive ? "bg-[#172033] font-medium text-[#f7f4ef] dark:bg-[#f3eadf] dark:text-[#172033]" : "text-[#3c4658] hover:bg-white dark:text-[#f4efe8] dark:hover:bg-white/5",
         )
       }
     >
@@ -39,45 +37,31 @@ export function Layout({ children }: { children: ReactNode }) {
   const patch = useAppStore((s) => s.patchPortal);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const studio = studioPaths.some((path) => pathname === path);
   const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    document.body.classList.toggle("studio", studio);
-  }, [theme, studio]);
-
-  const close = () => setOpen(false);
+  }, [theme]);
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-30 border-b border-[#d5e4f2] bg-white/95 backdrop-blur dark:border-white/10 dark:bg-[#071422]/95">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center gap-2 px-3 py-3 sm:gap-3 sm:px-6">
+      <header className="sticky top-0 z-30 border-b border-[#eadfd2]/80 bg-[#f7f4ef]/80 backdrop-blur-xl dark:border-white/10 dark:bg-[#0b1220]/80">
+        <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-4 py-3">
           <NavLink to="/" aria-label="Home" className="flex items-center gap-3" onClick={close}>
-            <img src="/logo.png?v=2" alt="" className="h-10 w-10 rounded-2xl object-cover" />
+            <img src="/logo.png?v=2" alt="" className="h-11 w-11 rounded-2xl object-cover shadow-sm" />
             <span>
-              <span className="block font-display text-lg leading-none">CardioTwin</span>
-              <span className="text-xs text-[#123a6b] dark:text-[#8eb8e8]">{studio ? "Compare the answers" : "Dr. Vimlesh Pandey"}</span>
+              <span className="block font-display text-xl leading-none text-[#172033] dark:text-[#f7f4ef]">CardioTwin</span>
+              <ModelNote />
             </span>
           </NavLink>
           <nav className="ml-auto hidden items-center gap-1 md:flex">
-            {studio ? (
-              <>
-                <LinkItem to="/" label="Back to the visit" />
-                {studioLinks.map(([to, label]) => (
-                  <LinkItem key={to} to={to} label={label} />
-                ))}
-              </>
-            ) : (
-              <>
-                <LinkItem to="/consultation" label="Consultation" />
-                <LinkItem to="/records" label="Records" />
-                <LinkItem to="/studio" label="Compare" />
-              </>
-            )}
+            {links.map(([to, label]) => (
+              <LinkItem key={to} to={to} label={label} />
+            ))}
           </nav>
           <button
-            className="ml-auto rounded-full bg-[#123a6b] px-3 py-1.5 text-xs font-semibold text-white"
+            className="rounded-full border border-[#172033] bg-[#172033] px-3 py-1.5 text-xs font-medium text-[#f7f4ef] transition hover:-translate-y-0.5 dark:border-[#f3eadf] dark:bg-[#f3eadf] dark:text-[#172033]"
             onClick={() => {
               patch({ view: doctorView && pathname === "/consultation" ? "Patient" : "Doctor" });
               if (pathname !== "/consultation") navigate("/consultation");
@@ -86,11 +70,10 @@ export function Layout({ children }: { children: ReactNode }) {
             {doctorView && pathname === "/consultation" ? "Patient view" : "Doctor's view"}
           </button>
           <button
-            className="inline-flex items-center gap-2 rounded-full border border-[#c5d7ea] px-3 py-1.5 text-xs text-[#0b1f3a] dark:border-white/30 dark:text-white"
+            className="inline-flex items-center gap-2 rounded-full border border-[#eadfd2] bg-white/70 px-3 py-1.5 text-xs text-[#172033] dark:border-white/15 dark:bg-white/5 dark:text-[#f7f4ef]"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
-            {theme === "dark" ? "Light" : "Dark"}
           </button>
           <button className="md:hidden" aria-label="Open menu" onClick={() => setOpen(true)}>
             <Menu size={20} />
@@ -98,35 +81,23 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
       {open && (
-        <div className="fixed inset-0 z-40 bg-[#1a1a1a]/40 md:hidden" onClick={close}>
-          <aside className="h-full w-[280px] bg-white p-4 dark:bg-[#071422]" onClick={(event) => event.stopPropagation()}>
-            <div className="mb-4 flex items-center justify-between">
-              <p className="font-display text-lg">CardioTwin</p>
+        <div className="fixed inset-0 z-40 bg-[#172033]/40 md:hidden" onClick={close}>
+          <aside className="h-full w-[280px] bg-[#f7f4ef] p-5 dark:bg-[#0b1220]" onClick={(event) => event.stopPropagation()}>
+            <div className="mb-6 flex items-center justify-between">
+              <p className="font-display text-2xl">CardioTwin</p>
               <button aria-label="Close menu" onClick={close}><X size={18} /></button>
             </div>
             <div className="flex flex-col gap-1">
-              {studio ? (
-                <>
-                  <LinkItem to="/" label="Back to the visit" onClick={close} />
-                  {studioLinks.map(([to, label]) => (
-                    <LinkItem key={to} to={to} label={label} onClick={close} />
-                  ))}
-                </>
-              ) : (
-                <>
-                  <LinkItem to="/" label="Home" onClick={close} />
-                  <LinkItem to="/consultation" label="Consultation" onClick={close} />
-                  <LinkItem to="/records" label="Records" onClick={close} />
-                  <LinkItem to="/studio" label="Compare" onClick={close} />
-                </>
-              )}
+              {links.map(([to, label]) => (
+                <LinkItem key={to} to={to} label={label} onClick={close} />
+              ))}
             </div>
           </aside>
         </div>
       )}
-      <main className="mx-auto w-full max-w-[1440px] flex-1 px-3 py-6 sm:px-6 sm:py-8">{children}</main>
-      <footer className="border-t border-[#d5e4f2] px-4 py-6 text-center text-sm text-[#2c4060] dark:border-white/10 dark:text-[#d5e4f0]">
-        Clinical decision support for when Dr. Pandey is not in the room. Pain at rest, fainting, or severe breathlessness needs emergency care.
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:py-10">{children}</main>
+      <footer className="border-t border-[#eadfd2] px-4 py-8 text-center text-sm text-[#5c5348] dark:border-white/10 dark:text-[#d9d0c5]">
+        Decision support for when Dr. Pandey is not in the room. Pain at rest, fainting, or severe breathlessness needs emergency care.
       </footer>
     </div>
   );

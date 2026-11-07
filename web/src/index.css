@@ -14,19 +14,19 @@ body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  font-family: "Source Sans 3", "Segoe UI", sans-serif;
-  background: #ffffff;
-  color: #0b1f3a;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(900px 420px at 8% -10%, rgba(184, 149, 106, 0.18), transparent 55%),
+    radial-gradient(700px 380px at 100% 0%, rgba(18, 58, 107, 0.08), transparent 50%),
+    #f7f4ef;
+  color: #172033;
 }
 
 html.dark body {
-  background: #071422;
-  color: #f4f7fb;
-}
-
-body.studio,
-html.dark body.studio {
-  background: inherit;
+  background:
+    radial-gradient(800px 380px at 0% -10%, rgba(184, 149, 106, 0.16), transparent 50%),
+    #0b1220;
+  color: #f4efe8;
 }
 
 * {
@@ -34,24 +34,11 @@ html.dark body.studio {
 }
 
 ::selection {
-  background: rgba(47, 111, 173, 0.28);
+  background: rgba(184, 149, 106, 0.35);
 }
 
 summary {
   list-style: none;
-}
-
-summary::before {
-  content: "▸ ";
-  color: #123a6b;
-}
-
-html.dark summary::before {
-  color: #8eb8e8;
-}
-
-details[open] > summary::before {
-  content: "▾ ";
 }
 
 summary::-webkit-details-marker {

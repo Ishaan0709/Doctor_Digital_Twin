@@ -26,6 +26,7 @@ interface AppState {
   setGenericResult: (result: GenericResult | null) => void;
   setTwinResult: (result: TwinResult | null) => void;
   savePortalIntake: (patient: Patient) => void;
+  attachVisit: () => void;
   patchPortal: (partial: Partial<PortalState>) => void;
   resetPortalChat: () => void;
 }
@@ -61,6 +62,15 @@ export const useAppStore = create<AppState>()(
           genericResult: null,
           twinResult: null,
           portal: { ...emptyPortal, patient },
+        }),
+      attachVisit: () =>
+        set((state) => {
+          const visit = state.portal.patient;
+          if (!visit) return state;
+          return {
+            patient: state.patient || visit,
+            twinResult: state.twinResult || state.portal.twin,
+          };
         }),
       patchPortal: (partial) => set((state) => ({ portal: { ...state.portal, ...partial } })),
       resetPortalChat: () =>

@@ -1,62 +1,123 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { PatientForm } from "../components/PatientForm";
+import { RichText } from "../components/RichText";
+import { Card, ModelNote, PageHeader, Skeleton } from "../components/ui";
 import { streamConsult } from "../lib/api";
 import { useAppStore } from "../store/useAppStore";
-import type { TwinResult } from "../types";
-import { RichText } from "../components/RichText";
-import { Button, Card, Note, PageHeader, Skeleton } from "../components/ui";
+import { demoPatient, type GenericResult, type Patient, type TwinResult } from "../types";
+
+function visitKey(person: Patient) {
+  return `${person.name}|${person.age}|${person.symptoms}|${person.medical_history}`;
+}
+
+async function runSide(kind: "generic" | "twin", person: Patient, signal: AbortSignal, onText: (text: string) => void) {
+  let received: (GenericResult & TwinResult) | null = null;
+  let acc = "";
+  await streamConsult({ kind, patient: person }, (event) => {
+    if (event.type === "meta" && event.result) received = event.result;
+    if (event.type === "token" && event.text) {
+      acc += event.text;
+      onText(acc);
+    }
+    if (event.type === "done") {
+      const text = event.text || acc;
+      onText(text);
+      if (kind === "generic") {
+        useAppStore.getState().setGenericResult({ ...(received || {}), consultation_summary: text } as GenericResult);
+      } else {
+        useAppStore.getState().setTwinResult({
+          unique_factors: [],
+          historical_patterns: [],
+          recommended_tests: [],
+          immediate_actions: [],
+          follow_up_plan: [],
+          confidence_score: 0,
+          ...(received || {}),
+          assessment: text,
+        });
+      }
+    }
+  }, signal);
+}
 
 export default function Comparison() {
   const patient = useAppStore((s) => s.patient);
+  const portalPatient = useAppStore((s) => s.portal.patient);
   const generic = useAppStore((s) => s.genericResult);
   const twin = useAppStore((s) => s.twinResult);
-  const setTwin = useAppStore((s) => s.setTwinResult);
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const attachVisit = useAppStore((s) => s.attachVisit);
+  const saveIntake = useAppStore((s) => s.savePortalIntake);
+  const person = patient || portalPatient;
+  const [genericLive, setGenericLive] = useState("");
+  const [twinLive, setTwinLive] = useState("");
+  const [running, setRunning] = useState(false);
 
   useEffect(() => {
-    if (!patient || !generic || twin) return;
+    if (!person) return;
+    attachVisit();
+    const current = useAppStore.getState();
+    const needGeneric = !current.genericResult;
+    const needTwin = !(current.twinResult || current.portal.twin);
+    if (current.portal.twin && !current.twinResult) current.setTwinResult(current.portal.twin);
+    if (!needGeneric && !needTwin) return;
     const ctrl = new AbortController();
-    let received: TwinResult | null = null;
-    let acc = "";
-    setLoading(true);
-    streamConsult({ kind: "twin", patient }, (event) => {
-      if (event.type === "meta" && event.result) received = event.result as TwinResult;
-      if (event.type === "token" && event.text) acc += event.text;
-      if (event.type === "done" && received) setTwin({ ...received, assessment: event.text || acc });
-    }, ctrl.signal).catch((error: Error) => {
-      if (error.name !== "AbortError") toast.error(error.message);
-    }).finally(() => setLoading(false));
+    setRunning(true);
+    const jobs: Promise<void>[] = [];
+    if (needGeneric) jobs.push(runSide("generic", person, ctrl.signal, setGenericLive));
+    if (needTwin) jobs.push(runSide("twin", person, ctrl.signal, setTwinLive));
+    Promise.all(jobs)
+      .catch((error: Error) => {
+        if (error.name !== "AbortError") toast.error(error.message);
+      })
+      .finally(() => {
+        if (!ctrl.signal.aborted) setRunning(false);
+      });
     return () => ctrl.abort();
-  }, [patient, generic, twin, setTwin]);
+  }, [person ? visitKey(person) : "", attachVisit]);
 
-  if (!patient) return <Card><p>Please complete Patient Intake first.</p><Link to="/patient" className="text-sky-600">Open intake</Link></Card>;
-  if (!generic) return <Card><p>Please run the generic consultation first.</p><Link to="/generic" className="text-sky-600">Open generic baseline</Link></Card>;
-  if (!twin || loading) return <Skeleton className="h-64" />;
-  const links = twin.graph_evidence?.links?.length || 0;
+  if (!person) {
+    return (
+      <div>
+        <PageHeader eyebrow="Compare" title="Both answers, from one set of details." caption="Save the visit once. The general answer and Dr. Pandey’s twin are written for you." />
+        <Card>
+          <PatientForm
+            initial={demoPatient}
+            mode="portal"
+            submitLabel="Write both answers"
+            onSubmit={(next) => {
+              saveIntake(next);
+              toast.success("Writing both answers.");
+            }}
+          />
+        </Card>
+      </div>
+    );
+  }
+
+  const genericText = generic?.consultation_summary || genericLive;
+  const twinText = twin?.assessment || twinLive;
+  const waitingGeneric = !genericText;
+  const waitingTwin = !twinText;
+
   return (
     <div>
-      <PageHeader eyebrow="4 · Difference" title="GPT vs Twin Diagnosis Difference" caption="Side-by-side view of baseline AI and specialist twin reasoning." />
-      <Note title="How to read this comparison">The left side is generic AI from the current patient only. The right side is the Dr. Pandey twin using patient context, retrieved cases, and graph reasoning.</Note>
+      <PageHeader eyebrow="Compare" title={`Two readings for ${person.name}`} caption="The left answer sees only this visit. The right answer also uses similar cases and the graph. Neither one is a diagnosis." />
+      <ModelNote className="mb-4" />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <h2 className="text-xl font-semibold">Generic GPT</h2>
-          <RichText text={generic.consultation_summary} />
-          <ul className="mt-4 list-disc space-y-1 pl-5 text-sm"><li>Uses only direct patient text.</li><li>Does not reference specialist case memory.</li><li>Does not apply graph relationship reasoning.</li></ul>
+          <p className="text-xs uppercase tracking-[0.18em] text-[#8a6a3b]">This visit only</p>
+          <h2 className="mt-1 font-display text-2xl font-semibold">General answer</h2>
+          {waitingGeneric ? <Skeleton className="mt-4 h-40" /> : <RichText text={genericText} />}
+          {running && waitingGeneric && <p className="mt-3 text-sm text-[#5c5348]">Writing the general answer…</p>}
         </Card>
         <Card>
-          <h2 className="text-xl font-semibold">Dr. Pandey AI Twin</h2>
-          <RichText text={twin.assessment} />
-          <ul className="mt-4 list-disc space-y-1 pl-5 text-sm"><li>Uses patient-first specialist framing.</li><li>Adds retrieved historical case patterns.</li><li>Adds GraphRAG links for risk and decision context.</li></ul>
+          <p className="text-xs uppercase tracking-[0.18em] text-[#8a6a3b]">Cases and graph</p>
+          <h2 className="mt-1 font-display text-2xl font-semibold">Dr. Pandey’s twin</h2>
+          {waitingTwin ? <Skeleton className="mt-4 h-40" /> : <RichText text={twinText} />}
+          {running && waitingTwin && <p className="mt-3 text-sm text-[#5c5348]">Writing the twin…</p>}
         </Card>
       </div>
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
-        <Card><p className="text-sm text-slate-500">Historical cases used</p><p className="text-3xl font-semibold">{twin.historical_patterns?.length || 0}</p></Card>
-        <Card><p className="text-sm text-slate-500">Graph links triggered</p><p className="text-3xl font-semibold">{links}</p></Card>
-        <Card><p className="text-sm text-slate-500">Twin confidence</p><p className="text-3xl font-semibold">{Math.round((twin.confidence_score || 0) * 100)}%</p><p className="text-xs text-slate-500">min(0.98, 0.60 + 0.07×cases + 0.03×graph links)</p></Card>
-      </div>
-      <Button className="mt-4" variant="primary" onClick={() => navigate("/evidence")}>Continue to Evidence Center</Button>
     </div>
   );
 }
