@@ -7,10 +7,11 @@ The held-out experiment, when it is run, uses temperature 0.
 from __future__ import annotations
 
 from typing import Iterator, Optional
+from urllib.parse import urlsplit
 
 import httpx
 
-from config import LLM_PROVIDER, OLLAMA_BASE_URL, OLLAMA_MODEL, OPENAI_API_KEY, OPENAI_MODEL
+from config import LLM_PROVIDER, OLLAMA_API_KEY, OLLAMA_BASE_URL, OLLAMA_MODEL, OPENAI_API_KEY, OPENAI_MODEL
 
 PROVIDERS = ("openai", "ollama")
 LIVE_TEMPERATURE = 0.2
@@ -110,6 +111,21 @@ def _openai_stream(system_prompt: str, user_prompt: str, temperature: float) -> 
             yield text
 
 
+def _ollama_headers() -> dict:
+    if not OLLAMA_API_KEY:
+        return {}
+    return {"Authorization": f"Bearer {OLLAMA_API_KEY}"}
+
+
+def _ollama_down_message() -> str:
+    parts = urlsplit(OLLAMA_BASE_URL)
+    host = (parts.hostname or "").lower()
+    local = host in {"localhost", "127.0.0.1"} and not parts.username and not OLLAMA_API_KEY
+    if local:
+        return f"Could not reach Ollama at {OLLAMA_BASE_URL}. Start it with: ollama serve"
+    return "Could not reach the model server."
+
+
 def _ollama_messages(system_prompt: str, user_prompt: str) -> list[dict]:
     return [
         {"role": "system", "content": system_prompt},
@@ -119,9 +135,11 @@ def _ollama_messages(system_prompt: str, user_prompt: str) -> list[dict]:
 
 def _raise_for_ollama(response: httpx.Response) -> None:
     if response.status_code == 404:
-        raise LLMError(f"Ollama model '{OLLAMA_MODEL}' was not found at {OLLAMA_BASE_URL}. Pull it with: ollama pull {OLLAMA_MODEL}")
+        raise LLMError(f"Ollama model '{OLLAMA_MODEL}' is not available. Pull it with: ollama pull {OLLAMA_MODEL}")
     if response.status_code >= 400:
         detail = response.text.strip()[:300] or response.reason_phrase
+        if OLLAMA_API_KEY and OLLAMA_API_KEY in detail:
+            detail = detail.replace(OLLAMA_API_KEY, "[redacted]")
         raise LLMError(f"Ollama returned {response.status_code}: {detail}")
 
 
@@ -133,9 +151,9 @@ def _ollama_complete(system_prompt: str, user_prompt: str, temperature: float) -
         "options": {"temperature": temperature},
     }
     try:
-        response = httpx.post(f"{OLLAMA_BASE_URL}/api/chat", json=payload, timeout=OLLAMA_TIMEOUT)
+        response = httpx.post(f"{OLLAMA_BASE_URL}/api/chat", json=payload, headers=_ollama_headers(), timeout=OLLAMA_TIMEOUT)
     except httpx.ConnectError as exc:
-        raise LLMError(f"Could not reach Ollama at {OLLAMA_BASE_URL}. Start it with: ollama serve") from exc
+        raise LLMError(_ollama_down_message()) from exc
     except httpx.TimeoutException as exc:
         raise LLMError(f"Ollama timed out after {int(OLLAMA_TIMEOUT)} seconds.") from exc
     _raise_for_ollama(response)
@@ -152,7 +170,7 @@ def _ollama_stream(system_prompt: str, user_prompt: str, temperature: float) -> 
         "options": {"temperature": temperature},
     }
     try:
-        with httpx.stream("POST", f"{OLLAMA_BASE_URL}/api/chat", json=payload, timeout=OLLAMA_TIMEOUT) as response:
+        with httpx.stream("POST", f"{OLLAMA_BASE_URL}/api/chat", json=payload, headers=_ollama_headers(), timeout=OLLAMA_TIMEOUT) as response:
             if response.status_code >= 400:
                 response.read()
                 _raise_for_ollama(response)
@@ -168,6 +186,6 @@ def _ollama_stream(system_prompt: str, user_prompt: str, temperature: float) -> 
                 if piece:
                     yield piece
     except httpx.ConnectError as exc:
-        raise LLMError(f"Could not reach Ollama at {OLLAMA_BASE_URL}. Start it with: ollama serve") from exc
+        raise LLMError(_ollama_down_message()) from exc
     except httpx.TimeoutException as exc:
         raise LLMError(f"Ollama timed out after {int(OLLAMA_TIMEOUT)} seconds.") from exc

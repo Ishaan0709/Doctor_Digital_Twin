@@ -80,6 +80,20 @@ def test_openai_stream_yields_tokens(monkeypatch):
     assert "".join(llm.stream_text("system", "user", provider="openai")) == "Hello doctor"
 
 
+def test_remote_ollama_sends_a_key_and_hides_it(monkeypatch):
+    monkeypatch.setattr(llm, "OLLAMA_BASE_URL", "https://gate.example")
+    monkeypatch.setattr(llm, "OLLAMA_API_KEY", "secret-token")
+
+    def boom(*_args, **kwargs):
+        assert kwargs["headers"]["Authorization"] == "Bearer secret-token"
+        raise httpx.ConnectError("refused")
+
+    monkeypatch.setattr(httpx, "post", boom)
+    text = llm.complete("system", "user", provider="ollama")
+    assert "secret-token" not in text
+    assert "model server" in text
+
+
 def test_ollama_connection_failure(monkeypatch):
     def boom(*_args, **_kwargs):
         raise httpx.ConnectError("refused")
@@ -100,7 +114,7 @@ def test_ollama_model_not_found(monkeypatch):
 
     monkeypatch.setattr(httpx, "post", lambda *_a, **_k: Response())
     text = llm.complete("system", "user", provider="ollama")
-    assert "not found" in text.lower()
+    assert "not available" in text.lower()
 
 
 def test_ollama_complete_reads_message(monkeypatch):
