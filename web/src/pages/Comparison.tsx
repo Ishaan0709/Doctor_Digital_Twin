@@ -126,7 +126,9 @@ export default function Comparison() {
   );
 }
 
-const vimleshPoints = {
+type Point = [string, string];
+
+const vimleshPoints: { pros: Point[]; cons: Point[] } = {
   pros: [
     ["Written in his voice", "The twin follows Dr. Pandey’s preventive-cardiology instructions and the eight style rules, so the reading sounds like his clinic rather than a general medical note."],
     ["His 500 cases stay in the answer", "Five similar consultations are retrieved and placed beside this visit. The next step can point at a case he has already decided, and that case is a reference, not this patient."],
@@ -140,7 +142,7 @@ const vimleshPoints = {
   ],
 };
 
-const gptPoints = {
+const gptPoints: { pros: Point[]; cons: Point[] } = {
   pros: [
     ["Fluent general language", "GPT writes a smooth note from this visit alone, which is useful when you want a second wording that has not seen the case file."],
     ["No local model required", "That column calls OpenAI directly, so it still answers when Ollama is not running on this machine."],
@@ -153,7 +155,7 @@ const gptPoints = {
   ],
 };
 
-function PointList({ items, mark }: { items: [string, string][]; mark: "pro" | "con" }) {
+function PointList({ items, mark }: { items: Point[]; mark: "pro" | "con" }) {
   const pro = mark === "pro";
   return (
     <ul className="mt-3 space-y-3">
