@@ -26,7 +26,7 @@ export default function Home() {
             <Button className="px-8 py-4 text-base" onClick={() => navigate("/compare")}>Compare both answers</Button>
           </div>
         </div>
-        <img src="/doctor-twin.jpg?v=1" alt="A stethoscope beside its glowing digital twin" className="aspect-[3/4] w-full rounded-[2rem] object-cover object-center shadow-[0_30px_80px_rgba(23,32,51,0.18)] ring-1 ring-[#eadfd2]" />
+        <img src="/doctor-clone.jpg?v=1" alt="A cardiologist beside a glowing clone of the same doctor" className="aspect-[3/4] w-full rounded-[2rem] object-cover object-[center_30%] shadow-[0_30px_80px_rgba(23,32,51,0.18)] ring-1 ring-[#eadfd2]" />
       </section>
       <section className="grid gap-4 md:grid-cols-3">
         {points.map(([title, body]) => (
