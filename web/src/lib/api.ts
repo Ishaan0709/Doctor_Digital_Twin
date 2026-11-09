@@ -12,7 +12,7 @@ export interface StreamEvent {
   detail?: string;
 }
 
-const RENDER_API = "https://cardiotwin-api-8coi.onrender.com";
+const RENDER_API = "https://doctor-digital-twin.onrender.com";
 
 function apiUrl(path: string) {
   const host = window.location.hostname;

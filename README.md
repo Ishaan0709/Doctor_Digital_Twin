@@ -6,7 +6,7 @@ This is not a diagnosis, a prescription, or an emergency service. Chest pain at 
 
 Live site: https://doctor-digital-twin.vercel.app/
 
-API: https://cardiotwin-api-8coi.onrender.com/health
+API: https://doctor-digital-twin.onrender.com/health
 
 Locally: http://localhost:8000
 
